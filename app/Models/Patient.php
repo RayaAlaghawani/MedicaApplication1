@@ -43,4 +43,11 @@ class Patient extends Model
         return null;
     }
 
+
+    public function medicalRecord()
+    {
+        return $this->hasOne(RecordMedical::class, 'patient_id');
+    }
+
+
 }

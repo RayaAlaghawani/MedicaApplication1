@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Mail\EmailVerificationMail;
 use App\Models\Patient;
+use App\Models\RecordMedical;
 use App\Models\specialization;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
@@ -237,12 +238,9 @@ class PatientController extends Controller
 
     }
 
-
-
-
-
-
     ///////show specialization
+    ///
+    ///
     ///
 
     public function getAvailableSpecializations()
@@ -253,6 +251,68 @@ class PatientController extends Controller
             'specializations' => $specializations
         ]);
     }
+
+
+
+    ////علومات المريض
+    public function upsertMedicalRecord(Request $request)
+    {
+        try {
+            /** @var \App\Models\Patient $user */
+            $user = auth('api-patient')->user();
+
+            $validated = $request->validate([
+                // معلومات ديموغرافية
+                'profession' => 'required|string',
+                'marital_status' => 'required|in:Single,Married',
+                'education' => 'required|string',
+                'residence' => 'required|string',
+                'phone_number' => 'required|string',
+
+                // أسئلة النوم والحالة النفسية
+                'sleep_hours' => 'required|integer|min:0|max:24',
+                'insomnia' => 'required|boolean',
+                'wakes_up_often' => 'required|boolean',
+                'wakes_up_tired' => 'required|boolean',
+                'uses_sleep_medication' => 'required|boolean',
+
+                'recent_depression' => 'required|boolean',
+                'anxiety_or_stress' => 'required|boolean',
+                'visited_psychologist' => 'required|boolean',
+                'trauma_experience' => 'required|boolean',
+                'sleeps_due_to_overthinking' => 'required|boolean',
+
+                // العادات اليومية
+                'smoker' => 'required|boolean',
+                'alcohol' => 'required|boolean',
+                'caffeine' => 'required|boolean',
+                'exercise' => 'required|boolean',
+                'diet' => 'required|in:vegetarian,gluten_free,natural,none',
+            ]);
+
+            $record = RecordMedical::updateOrCreate(
+                ['patient_id' => $user->id],
+                $validated
+            );
+
+            return response()->json([
+                'message' => 'تم حفظ السجل الطبي بنجاح.',
+                'medical_record' => $record
+            ], 200);
+
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'message' => 'فشل في التحقق من البيانات.',
+                'errors' => $e->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'حدث خطأ أثناء حفظ السجل الطبي.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
 
 
 }

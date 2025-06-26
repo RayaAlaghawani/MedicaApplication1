@@ -28,9 +28,13 @@ Route::prefix('patient')->group(function () {
     Route::post('forgot-password', [PatientController::class, 'sendResetCode']);
     Route::post('reset-password/{id}', [PatientController::class, 'resetPassword']);
     Route::middleware(['auth:api-patient'])->group(function() {
+
         Route::get('showprofile', [PatientController::class, 'showProfile']);
         Route::post('update-profile', [PatientController::class, 'updateProfile']);
         Route::post('logout', [PatientController::class, 'logout']);
+        Route::post('medical-record', [PatientController::class, 'upsertMedicalRecord']);
+
+
     });    });
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

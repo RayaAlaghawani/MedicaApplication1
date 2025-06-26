@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('record_medicals', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('patient_id')->constrained()->onDelete('cascade');
 
             // Lifestyle Fields
             $table->string('profession')->nullable();
@@ -20,6 +21,7 @@ return new class extends Migration
             $table->string('education')->nullable();
             $table->string('residence')->nullable();
             $table->string('phone_number')->nullable();
+            //dialy routeeny
             $table->boolean('smoker')->default(false);
             $table->boolean('alcohol')->default(false);
             $table->boolean('caffeine')->default(false);
@@ -32,6 +34,7 @@ return new class extends Migration
             $table->boolean('wakes_up_often')->default(false);
             $table->boolean('wakes_up_tired')->default(false);
             $table->boolean('uses_sleep_medication')->default(false);
+            //الحالة النفسية
             $table->boolean('recent_depression')->default(false);
             $table->boolean('anxiety_or_stress')->default(false);
             $table->boolean('visited_psychologist')->default(false);
@@ -44,6 +47,7 @@ return new class extends Migration
 
     /**
      * Reverse the migrations.
+
      */
     public function down(): void
     {
