@@ -189,6 +189,7 @@ class PatientController extends Controller
     }
     /////////profile
     public function updateProfile(Request $request)
+
     {
 
         /** @var \App\Models\Patient $user */
@@ -235,6 +236,8 @@ class PatientController extends Controller
         ], 200);
 
     }
+
+
 
 
 
