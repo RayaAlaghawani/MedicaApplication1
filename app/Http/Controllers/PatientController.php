@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
+use Nette\Schema\ValidationException;
 
 
 class PatientController extends Controller
@@ -144,8 +145,12 @@ class PatientController extends Controller
         Mail::to($patient->email)->send(new EmailVerificationMail($resetCode));
 
         return response()->json([
+
+            'id' => $patient->id,
             'message' => 'تم إرسال رمز إعادة تعيين كلمة المرور إلى بريدك الإلكتروني.',
             'code' =>$resetCode,
+
+
         ]);
     }
 ////////resett password
@@ -242,6 +247,40 @@ class PatientController extends Controller
     ///
     ///
     ///
+    ///
+    ///
+    ///
+    public function addspecialization(Request $request)
+    {
+        try {
+            // التحقق من صحة البيانات
+            $validated = $request->validate([
+                'name' => 'required|string|unique:specializations,name',
+            ]);
+
+            // إنشاء التخصص
+            $specialization = Specialization::create([
+                'name' => $validated['name'],
+            ]);
+
+            return response()->json([
+                'message' => 'تم إضافة التخصص بنجاح.',
+                'specialization' => $specialization
+            ], 201);
+
+        } catch (ValidationException $e) {
+            return response()->json([
+                'message' => 'فشل في التحقق من البيانات.',
+                'errors' => $e->errors()
+            ], 422);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'حدث خطأ أثناء إضافة التخصص.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
 
     public function getAvailableSpecializations()
     {
@@ -252,43 +291,88 @@ class PatientController extends Controller
         ]);
     }
 
+    public function getAllSpecializations()
+    {
+        try {
+            $specializations = Specialization::all();
+
+            return response()->json([
+                'message' => 'تم جلب جميع التخصصات.',
+                'specializations' => $specializations
+            ], 200);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'حدث خطأ أثناء جلب التخصصات.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
 
 
-    ////علومات المريض
+    public function getDoctorsBySpecialization($specialization_id)
+    {
+        try {
+            // جلب الأطباء المرتبطين بهذا التخصص
+            $doctors = \App\Models\Doctor::where('specialization_id', $specialization_id)->get();
+
+            if ($doctors->isEmpty()) {
+                return response()->json([
+                    'message' => 'لا يوجد أطباء لهذا التخصص.',
+                    'doctors' => []
+                ], 200);
+            }
+
+            return response()->json([
+                'message' => 'تم جلب الأطباء بنجاح.',
+                'doctors' => $doctors
+            ], 200);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'حدث خطأ أثناء جلب الأطباء.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+
+
+
+
+
+
+
+
     public function upsertMedicalRecord(Request $request)
     {
         try {
             /** @var \App\Models\Patient $user */
             $user = auth('api-patient')->user();
 
-            $validated = $request->validate([
-                // معلومات ديموغرافية
-                'profession' => 'required|string',
-                'marital_status' => 'required|in:Single,Married',
-                'education' => 'required|string',
+            $rules = [
                 'residence' => 'required|string',
-                'phone_number' => 'required|string',
+            ];
 
-                // أسئلة النوم والحالة النفسية
-                'sleep_hours' => 'required|integer|min:0|max:24',
-                'insomnia' => 'required|boolean',
-                'wakes_up_often' => 'required|boolean',
-                'wakes_up_tired' => 'required|boolean',
-                'uses_sleep_medication' => 'required|boolean',
+            if ($user->age < 18) {
+                // أسئلة الأطفال
+                $rules = array_merge($rules, [
+                    'guardian_name' => 'required|string',
+                    'guardian_phone' => 'required|string',
+                    'child_sleeps_well' => 'required|boolean',
+                ]);
+            } else {
+                // أسئلة البالغين
+                $rules = array_merge($rules, [
+                    'phone_number' => 'required|string',
+                    'marital_status' => 'required|in:Single,Married',
+                    'profession' => 'required|string',
+                    'education' => 'required|string',
+                    'insomnia' => 'required|boolean',
+                ]);
+            }
 
-                'recent_depression' => 'required|boolean',
-                'anxiety_or_stress' => 'required|boolean',
-                'visited_psychologist' => 'required|boolean',
-                'trauma_experience' => 'required|boolean',
-                'sleeps_due_to_overthinking' => 'required|boolean',
-
-                // العادات اليومية
-                'smoker' => 'required|boolean',
-                'alcohol' => 'required|boolean',
-                'caffeine' => 'required|boolean',
-                'exercise' => 'required|boolean',
-                'diet' => 'required|in:vegetarian,gluten_free,natural,none',
-            ]);
+            $validated = $request->validate($rules);
 
             $record = RecordMedical::updateOrCreate(
                 ['patient_id' => $user->id],
@@ -312,6 +396,8 @@ class PatientController extends Controller
             ], 500);
         }
     }
+
+
 
 
 

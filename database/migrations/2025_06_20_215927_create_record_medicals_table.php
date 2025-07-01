@@ -14,32 +14,20 @@ return new class extends Migration
         Schema::create('record_medicals', function (Blueprint $table) {
             $table->id();
             $table->foreignId('patient_id')->constrained()->onDelete('cascade');
-
-            // Lifestyle Fields
-            $table->string('profession')->nullable();
-            $table->string('marital_status')->nullable();
-            $table->string('education')->nullable();
+            // مشترك: مكان السكن
             $table->string('residence')->nullable();
-            $table->string('phone_number')->nullable();
-            //dialy routeeny
-            $table->boolean('smoker')->default(false);
-            $table->boolean('alcohol')->default(false);
-            $table->boolean('caffeine')->default(false);
-            $table->boolean('exercise')->default(false);
-            $table->enum('diet', ['vegetarian', 'gluten_free', 'natural', 'none'])->default('none');
 
-            // Sleep & Mental Health Fields
-            $table->integer('sleep_hours')->nullable();
-            $table->boolean('insomnia')->default(false);
-            $table->boolean('wakes_up_often')->default(false);
-            $table->boolean('wakes_up_tired')->default(false);
-            $table->boolean('uses_sleep_medication')->default(false);
-            //الحالة النفسية
-            $table->boolean('recent_depression')->default(false);
-            $table->boolean('anxiety_or_stress')->default(false);
-            $table->boolean('visited_psychologist')->default(false);
-            $table->boolean('trauma_experience')->default(false);
-            $table->boolean('sleeps_due_to_overthinking')->default(false);
+            // أسئلة الأطفال
+            $table->string('guardian_name')->nullable();
+            $table->string('guardian_phone')->nullable();
+            $table->boolean('child_sleeps_well')->nullable(); // نعم/لا
+
+            // أسئلة البالغين
+            $table->string('phone_number')->nullable();
+            $table->string('marital_status')->nullable(); // عازب/متزوج
+            $table->string('profession')->nullable();
+            $table->string('education')->nullable();
+            $table->boolean('insomnia')->nullable(); // صعوبة في النوم
 
             $table->timestamps();
         });

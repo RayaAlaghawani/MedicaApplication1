@@ -33,6 +33,10 @@ Route::prefix('patient')->group(function () {
         Route::post('update-profile', [PatientController::class, 'updateProfile']);
         Route::post('logout', [PatientController::class, 'logout']);
         Route::post('medical-record', [PatientController::class, 'upsertMedicalRecord']);
+        Route::get('specializations', [PatientController::class, 'getAvailableSpecializations']);
+        Route::post('addspecialization', [PatientController::class, 'addspecialization']);
+        Route::get('getAllSpecializations', [PatientController::class, 'getAllSpecializations']);
+        Route::get('doctors-by-specialization/{id}', [PatientController::class, 'getDoctorsBySpecialization']);
 
 
     });    });
