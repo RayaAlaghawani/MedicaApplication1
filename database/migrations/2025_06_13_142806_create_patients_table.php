@@ -20,7 +20,6 @@ return new class extends Migration
             $table->boolean('email_verified')->default(false);
             $table->string('email_verification_code')->nullable();
             $table->string('profile_image')->nullable();  // **هنا الحقل الجديد**
-
             $table->integer('age');
 
             $table->timestamps();

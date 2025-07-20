@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\authadmincontroller;
 use App\Http\Controllers\authdoctorcontroller;
 use App\Http\Controllers\joinRequests;
@@ -32,12 +33,19 @@ Route::prefix('patient')->group(function () {
         Route::get('showprofile', [PatientController::class, 'showProfile']);
         Route::post('update-profile', [PatientController::class, 'updateProfile']);
         Route::post('logout', [PatientController::class, 'logout']);
-        Route::post('medical-record', [PatientController::class, 'upsertMedicalRecord']);
+
+        Route::post('medical-record/child', [PatientController::class, 'storeChildMedicalRecord']);
+        Route::post('medical-record/adult', [PatientController::class, 'storeAdultMedicalRecord']);
+
         Route::get('specializations', [PatientController::class, 'getAvailableSpecializations']);
         Route::post('addspecialization', [PatientController::class, 'addspecialization']);
-        Route::get('getAllSpecializations', [PatientController::class, 'getAllSpecializations']);
-        Route::get('doctors-by-specialization/{id}', [PatientController::class, 'getDoctorsBySpecialization']);
+      //  Route::get('doctors-by-specialization/{id}', [PatientController::class, 'getDoctorsBySpecialization']);
 
+////////////////////الحجوزات
+        Route::get('getAllSpecializations', [AppointmentController::class, 'getAllSpecializations']);
+        Route::get('specializations/{id}/doctors', [AppointmentController::class, 'getDoctorsBySpecialization']);
+        Route::get('doctor/{id}', [AppointmentController::class, 'getDoctorById']);
+        Route::get('available-slots/{doctor_id}/{day_of_week}', [AppointmentController::class, 'getAvailableSlots']);
 
     });    });
 

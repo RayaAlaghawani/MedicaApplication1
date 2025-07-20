@@ -49,4 +49,13 @@ class doctor extends Authenticatable
     {
         return $this->hasMany(doctor_schedules::class);
     }
+
+
+
+
+    public function appointments()
+    {
+        return $this->hasMany(appointments::class);
+    }
+
 }

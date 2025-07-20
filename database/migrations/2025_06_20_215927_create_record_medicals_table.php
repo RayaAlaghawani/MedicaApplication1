@@ -14,21 +14,26 @@ return new class extends Migration
         Schema::create('record_medicals', function (Blueprint $table) {
             $table->id();
             $table->foreignId('patient_id')->constrained()->onDelete('cascade');
-            // مشترك: مكان السكن
+
+            // مشترك
             $table->string('residence')->nullable();
 
             // أسئلة الأطفال
             $table->string('guardian_name')->nullable();
             $table->string('guardian_phone')->nullable();
-            $table->boolean('child_sleeps_well')->nullable(); // نعم/لا
+            $table->boolean('child_sleeps_well')->nullable();
 
             // أسئلة البالغين
             $table->string('phone_number')->nullable();
-            $table->string('marital_status')->nullable(); // عازب/متزوج
+            $table->string('marital_status')->nullable();
             $table->string('profession')->nullable();
             $table->string('education')->nullable();
-            $table->boolean('insomnia')->nullable(); // صعوبة في النوم
+            $table->boolean('insomnia')->nullable();
 
+            // مشترك (جديد)
+            $table->boolean('has_chronic_disease')->nullable();
+            $table->boolean('takes_medications')->nullable();
+            $table->boolean('has_allergies')->nullable();
             $table->timestamps();
         });
     }

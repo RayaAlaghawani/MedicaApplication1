@@ -71,14 +71,22 @@ class PatientController extends Controller
 
         if ($patient->email_verification_code == $request->code) {
             $patient->email_verified = true;
-            $patient->email_verification_code = null; // احذف الكود بعد التحقق
+            $patient->email_verification_code = null;
             $patient->save();
 
-            return response()->json(['message' => 'تم التحقق من البريد الإلكتروني بنجاح.'], 200);
+            // توليد التوكن الآن بعد التحقق
+            $token = $patient->createToken('auth_token')->plainTextToken;
+
+            return response()->json([
+                'message' => 'تم التحقق من البريد الإلكتروني بنجاح.',
+                'token' => $token,
+                'user' => $patient
+            ], 200);
         }
 
         return response()->json(['message' => 'رمز التحقق غير صحيح.'], 400);
     }
+
     //////login
     public function login(Request $request)
     {
@@ -312,67 +320,73 @@ class PatientController extends Controller
 
     public function getDoctorsBySpecialization($specialization_id)
     {
-        try {
-            // جلب الأطباء المرتبطين بهذا التخصص
-            $doctors = \App\Models\Doctor::where('specialization_id', $specialization_id)->get();
 
-            if ($doctors->isEmpty()) {
+            // جلب الأطباء المرتبطين بهذا التخصص
+
+            $specialization = \App\Models\specialization::where('id', $specialization_id)->get();
+            if ($specialization) {
+                $doctors = \App\Models\Doctor::where('specialization_id', $specialization_id)->get();
+
+                // تنظيف البريد من أي رموز غير مرغوبة
+
+                $data = [];
+                foreach ($doctors as $doctor) {
+                $data[] = [
+                    'id' => $doctor->id,
+                    'status' => $doctor->status,
+                   // 'specializationName' => $specialization ? $specialization->name : null,
+                    'firstName' => $doctor->first_name,
+                    'lastName' => $doctor->last_name,
+                    'email' => $doctor->email,
+                    'phone' => $doctor->phone,
+                    'specializationId' => $doctor->specialization_id,
+                    'dateOfBirth' => date('Y-m-d', strtotime($doctor->DateOfBirth)),
+                    'nationality' => $doctor->Nationality,
+                    'clinicAddress' => $doctor->ClinicAddress,
+                    'consultationFee' => floatval($doctor->consultation_fee),
+                    'emailVerifiedAt' => $doctor->email_verified_at ? date('Y-m-d H:i:s', strtotime($doctor->email_verified_at)) : null,
+                    'imageUrl' => $doctor->image ? asset('storage/' . $doctor->image) : null,
+                    'certificateCopyUrl' => $doctor->CertificateCopy ? asset('storage/' . $doctor->CertificateCopy) : null,
+                    'curriculumVitae' => $doctor->CurriculumVitae,
+                    'professionalAssociationPhotoUrl' => $doctor->ProfessionalAssociationPhoto ? asset('storage/' . $doctor->ProfessionalAssociationPhoto) : null,
+                ];
+                return response()->json([
+                    'message' => 'تم جلب طلبات الانضمام بنجاح.',
+                    'data' => $data,
+                ], 200);
+
+            }}
                 return response()->json([
                     'message' => 'لا يوجد أطباء لهذا التخصص.',
                     'doctors' => []
-                ], 200);
+                ], 404);
             }
 
-            return response()->json([
-                'message' => 'تم جلب الأطباء بنجاح.',
-                'doctors' => $doctors
-            ], 200);
-
-        } catch (\Exception $e) {
-            return response()->json([
-                'message' => 'حدث خطأ أثناء جلب الأطباء.',
-                'error' => $e->getMessage()
-            ], 500);
-        }
-    }
-
-
-
-
-
-
-
-
-
-    public function upsertMedicalRecord(Request $request)
+///////السجل الطبي
+///
+    public function storeChildMedicalRecord(Request $request)
     {
         try {
-            /** @var \App\Models\Patient $user */
+            /** @var \App\Models\Patient|null $user */
             $user = auth('api-patient')->user();
 
-            $rules = [
-                'residence' => 'required|string',
-            ];
-
-            if ($user->age < 18) {
-                // أسئلة الأطفال
-                $rules = array_merge($rules, [
-                    'guardian_name' => 'required|string',
-                    'guardian_phone' => 'required|string',
-                    'child_sleeps_well' => 'required|boolean',
-                ]);
-            } else {
-                // أسئلة البالغين
-                $rules = array_merge($rules, [
-                    'phone_number' => 'required|string',
-                    'marital_status' => 'required|in:Single,Married',
-                    'profession' => 'required|string',
-                    'education' => 'required|string',
-                    'insomnia' => 'required|boolean',
-                ]);
+            if (!$user) {
+                return response()->json(['message' => 'المستخدم غير مسجل الدخول'], 401);
             }
 
-            $validated = $request->validate($rules);
+            if ($user->age >= 18) {
+                return response()->json(['message' => 'هذا التابع مخصص للأطفال فقط.'], 403);
+            }
+
+            $validated = $request->validate([
+                'guardian_name' => 'required|string',
+                'guardian_phone' => 'required|string',
+                'residence' => 'required|string',
+                'child_sleeps_well' => 'required|boolean',
+                'has_chronic_disease' => 'required|boolean',
+                'takes_medications' => 'required|boolean',
+                'has_allergies' => 'required|boolean',
+            ]);
 
             $record = RecordMedical::updateOrCreate(
                 ['patient_id' => $user->id],
@@ -380,22 +394,63 @@ class PatientController extends Controller
             );
 
             return response()->json([
-                'message' => 'تم حفظ السجل الطبي بنجاح.',
+                'message' => 'تم حفظ السجل الطبي للطفل.',
                 'medical_record' => $record
-            ], 200);
+            ]);
 
         } catch (\Illuminate\Validation\ValidationException $e) {
-            return response()->json([
-                'message' => 'فشل في التحقق من البيانات.',
-                'errors' => $e->errors()
-            ], 422);
+            return response()->json(['message' => 'فشل التحقق من البيانات.', 'errors' => $e->errors()], 422);
         } catch (\Exception $e) {
-            return response()->json([
-                'message' => 'حدث خطأ أثناء حفظ السجل الطبي.',
-                'error' => $e->getMessage()
-            ], 500);
+            return response()->json(['message' => 'حدث خطأ.', 'error' => $e->getMessage()], 500);
         }
     }
+
+
+    public function storeAdultMedicalRecord(Request $request)
+    {
+        try {
+            /** @var \App\Models\Patient|null $user */
+            $user = auth('api-patient')->user();
+
+            if (!$user) {
+                return response()->json(['message' => 'المستخدم غير مسجل الدخول'], 401);
+            }
+
+
+            if ($user->age < 18) {
+                return response()->json(['message' => 'هذا التابع مخصص للبالغين فقط.'], 403);
+            }
+
+            $validated = $request->validate([
+                'phone_number' => 'required|string',
+                'residence' => 'required|string',
+                'marital_status' => 'required|in:Single,Married',
+                'profession' => 'required|string',
+                'education' => 'required|string',
+                'insomnia' => 'required|boolean',
+                'has_chronic_disease' => 'required|boolean',
+                'takes_medications' => 'required|boolean',
+                'has_allergies' => 'required|boolean',
+            ]);
+
+            $record = RecordMedical::updateOrCreate(
+                ['patient_id' => $user->id],
+                $validated
+            );
+
+            return response()->json([
+                'message' => 'تم حفظ السجل الطبي للبالغ.',
+                'medical_record' => $record
+            ]);
+
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json(['message' => 'فشل التحقق من البيانات.', 'errors' => $e->errors()], 422);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'حدث خطأ.', 'error' => $e->getMessage()], 500);
+        }
+    }
+
+
 
 
 

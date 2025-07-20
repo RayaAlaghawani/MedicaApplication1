@@ -31,7 +31,8 @@ return new class extends Migration
             $table->string('ClinicAddress');
             $table->string('ProfessionalAssociationPhoto')->nullable()->default(';;');
             $table->string('CertificateCopy')->nullable()->default('jh');
-            $table->decimal('consultation_fee', 8, 2)->nullable();  // أجرة المعاينة للطبيب
+            $table->decimal('consultation_fee', 8, 2)->nullable();
+            // أجرة المعاينة للطبيب
             $table->rememberToken();
             $table->timestamps();
         });

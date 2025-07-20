@@ -50,7 +50,8 @@ return [
             'provider' => 'admins',
         ],
         'api-admin' => [
-            'driver' => 'sanctum',
+            'driver' =>
+                'sanctum',
             'provider' => 'admins',
         ],
         'doctor'=> [
