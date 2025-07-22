@@ -321,13 +321,13 @@ class PatientController extends Controller
     public function getDoctorsBySpecialization($specialization_id)
     {
 
-            // جلب الأطباء المرتبطين بهذا التخصص
+
 
             $specialization = \App\Models\specialization::where('id', $specialization_id)->get();
             if ($specialization) {
                 $doctors = \App\Models\Doctor::where('specialization_id', $specialization_id)->get();
 
-                // تنظيف البريد من أي رموز غير مرغوبة
+
 
                 $data = [];
                 foreach ($doctors as $doctor) {
