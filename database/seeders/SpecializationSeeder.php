@@ -12,6 +12,7 @@ class SpecializationSeeder extends Seeder
      */
     public function run(): void
     {
+
         $specializations = [
             'General Medicine',
             'Family Medicine',

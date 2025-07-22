@@ -31,14 +31,12 @@ class authadmincontroller extends Controller
     }
 
 ///logout
-        public function logout_admin()
+    public function logout_admin()
     {
         Auth::User()->currentAccessToken()->delete();
         return response()->json([
             'message' => 'goodbuy!!!'], 200);
 
     }
-
-
 
 }

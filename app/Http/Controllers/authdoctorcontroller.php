@@ -21,21 +21,21 @@ class authdoctorcontroller extends Controller
     public function register_doctor(Request $request)
     {
         $data = $request->validate([
-                'specialization_id'            => 'required|exists:specializations,id',
-                'first_name'                   => 'required|string|max:255',
-                'last_name'                    => 'required|string|max:255',
-                'device_token'                 => 'nullable|string',
-                'email'                        => 'required|email|unique:doctors,email',
-                'phone'                        => 'required|digits:10|unique:doctors,phone',
-                'password'                     => 'required|string|min:6|confirmed',
-                'image'                        => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-                'DateOfBirth'                  => 'required|date',
+            'specialization_id'            => 'required|exists:specializations,id',
+            'first_name'                   => 'required|string|max:255',
+            'last_name'                    => 'required|string|max:255',
+            'device_token'                 => 'nullable|string',
+            'email'                        => 'required|email|unique:doctors,email',
+            'phone'                        => 'required|digits:10|unique:doctors,phone',
+            'password'                     => 'required|string|min:6|confirmed',
+            'image'                        => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'DateOfBirth'                  => 'required|date',
             'CurriculumVitae' => 'nullable|string|max:5000',
-                'Nationality'                  => 'required|string|max:255',
-                'ClinicAddress'                => 'required|string|max:500',
-                'ProfessionalAssociationPhoto' => 'required|nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-                'CertificateCopy'              => 'required|file|mimes:pdf,jpg,jpeg,png|max:5120', //
-                'consultation_fee'             => 'required|numeric|min:0',
+            'Nationality'                  => 'required|string|max:255',
+            'ClinicAddress'                => 'required|string|max:500',
+            'ProfessionalAssociationPhoto' => 'required|nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'CertificateCopy'              => 'required|file|mimes:pdf,jpg,jpeg,png|max:5120', //
+            'consultation_fee'             => 'required|numeric|min:0',
         ], [
             'email.unique' => 'email already exists!!',
             'phone.unique' => 'phone already exists!!'
@@ -63,7 +63,7 @@ class authdoctorcontroller extends Controller
         }
 
         $data['password'] = bcrypt($request->password);
-       // $data['password'] = bcrypt($request->password);
+        // $data['password'] = bcrypt($request->password);
 
         $user = doctorPending::create($data);
         emailverfication::where('email', $data['email'])->delete();
@@ -72,7 +72,7 @@ class authdoctorcontroller extends Controller
             'email' => $data['email'],
             'code'  => $code,
         ]);
-       Mail::to($data['email'])->send(new SendEmailVervication($code));
+        Mail::to($data['email'])->send(new SendEmailVervication($code));
         return response()->json([
             'message' => 'Registration success. Please check your email to verify your account',
         ], 201);

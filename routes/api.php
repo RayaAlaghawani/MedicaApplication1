@@ -50,35 +50,53 @@ Route::prefix('patient')->group(function () {
     });    });
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 /// Route Admin
 Route::prefix('admin')->group(function() {
     Route::post('login_admin ', [authadmincontroller::class, 'login_admin']);
+    Route::middleware(['auth:admin,api-admin'])->group(function() {
+        Route::post('logout_admin ', [authadmincontroller::class, 'logout_admin']);
+        Route::get('getAllJoinRequests ', [joinRequests::class, 'getAllJoinRequests']);
+        Route::post('approveJoinRequest/{id}', [joinRequests::class, 'approveJoinRequest']);
+        Route::post('rejectJoinRequest/{id}', [joinRequests::class, 'rejectJoinRequest']);
+        //قسم اطباءindexِAllSpecialization
+        Route::get('index', [\App\Http\Controllers\doctorList::class, 'index']);
+        Route::post('search', [\App\Http\Controllers\doctorList::class, 'search']);
+        Route::get('show/{id}', [\App\Http\Controllers\doctorList::class, 'show']);
+        Route::post('store', [\App\Http\Controllers\doctorList::class, 'store']);
+        Route::post('update/{id}', [\App\Http\Controllers\doctorList::class, 'update']);
+        Route::get('indexAllSpecialization', [\App\Http\Controllers\doctorList::class, 'indexAllSpecialization']);
+        Route::post('addInformation/{id}', [\App\Http\Controllers\doctorList::class, 'addInformation']);
+//قسم سكرتاريا
+        Route::get('indexallSecretary', [\App\Http\Controllers\secretarias::class, 'indexallSecretary']);
 
-Route::middleware(['auth:admin,api-admin'])->group(function() {
-    Route::post('logout_admin ', [authadmincontroller::class, 'logout_admin']);
-    Route::get('getAllJoinRequests ', [joinRequests::class, 'getAllJoinRequests']);
-    Route::post('approveJoinRequest/{id}', [joinRequests::class, 'approveJoinRequest']);
-    Route::post('rejectJoinRequest/{id}', [joinRequests::class, 'rejectJoinRequest']);
+//قسم المرضى///
+        Route::get('showAllPatient', [\App\Http\Controllers\patientList::class, 'showAllPatient']);
+        Route::post('searchforPatient', [\App\Http\Controllers\patientList::class, 'searchforPatient']);
+        Route::post('banPatient/{id}', [\App\Http\Controllers\patientList::class, 'banPatient']);
+        Route::post('Unban/{id}', [\App\Http\Controllers\patientList::class, 'Unban']);
 
-});});
+    });});
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //ٌRoute doctor
+
 Route::prefix('doctor')->group(function() {
     Route::post('register', [authdoctorcontroller::class, 'register_doctor']);
     Route::post('verifyUser', [authdoctorcontroller::class, 'verify']);
     Route::post('login_user ', [authdoctorcontroller::class, 'login_user']);
-Route::middleware(['auth:doctor,api-doctor'])->group(function() {
- //   Route::post('user/password/email', [resetPasswordcontroller::class, 'userForgetPassword']);
-  //  Route::post('user/password/code/check', [resetPasswordcontroller::class, 'userCheckCode']);
-  //  Route::post('user/password/reset', [resetPasswordcontroller::class, 'userResetPassword']);
-    Route::post('logout_user ',[authdoctorcontroller::class,'logout_user']);
-    /////////مواعيد طبيب///////////////////1
-    Route::post('update/{id}',[weekly_schedules::class,'update']);
-    Route::post('delete/{id}',[weekly_schedules::class,'delete']);
-    Route::post('store',[weekly_schedules::class,'store']);
-    Route::get('index',[weekly_schedules::class,'index']);
+    Route::middleware(['auth:doctor,api-doctor'])->group(function() {
+        //   Route::post('user/password/email', [resetPasswordcontroller::class, 'userForgetPassword']);
+        //  Route::post('user/password/code/check', [resetPasswordcontroller::class, 'userCheckCode']);
+        //  Route::post('user/password/reset', [resetPasswordcontroller::class, 'userResetPassword']);
+        Route::post('logout_user ',[authdoctorcontroller::class,'logout_user']);
+        /////////مواعيد طبيب///////////////////1
+        Route::post('update/{id}',[weekly_schedules::class,'update']);
+        Route::post('delete/{id}',[weekly_schedules::class,'delete']);
+        Route::post('store',[weekly_schedules::class,'store']);
+        Route::get('index',[weekly_schedules::class,'index']);
 ////////////////////////////////////////2
-});});
+    });});
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

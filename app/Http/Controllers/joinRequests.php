@@ -48,7 +48,7 @@ class joinRequests extends Controller
                 'emailVerifiedAt' => $joinRequest->email_verified_at ? date('Y-m-d H:i:s', strtotime($joinRequest->email_verified_at)) : null,
                 'imageUrl' => $joinRequest->image ? asset('storage/' . $joinRequest->image) : null,
                 'certificateCopyUrl' => $joinRequest->CertificateCopy ? asset('storage/' . $joinRequest->CertificateCopy) : null,
-                'curriculumVitae' => $joinRequest->CurriculumVitae,
+                'CurriculumVitae_url' => $joinRequest->CurriculumVitae ? asset('storage/' . $joinRequest->CurriculumVitae) : null,
                 'professionalAssociationPhotoUrl' => $joinRequest->ProfessionalAssociationPhoto ? asset('storage/' . $joinRequest->ProfessionalAssociationPhoto) : null,
             ];
         }
@@ -115,7 +115,7 @@ class joinRequests extends Controller
                 'dateOfBirth' => $doctor->DateOfBirth,
                 'imageUrl' => $doctor->image ? asset('storage/' . $doctor->image) : null,
                 'certificateCopyUrl' => $doctor->CertificateCopy ? asset('storage/' . $doctor->CertificateCopy) : null,
-                'curriculumVitae' => $doctor->CurriculumVitae,
+                'CurriculumVitae_url' => $doctor->CurriculumVitae ? asset('storage/' . $doctor->CurriculumVitae) : null,
                 'professionalAssociationPhotoUrl' => $doctor->ProfessionalAssociationPhoto ? asset('storage/' . $doctor->ProfessionalAssociationPhoto) : null,
             ],
         ], 200);
@@ -145,11 +145,58 @@ class joinRequests extends Controller
         $message = $request->input('rejection_message');
         $doctorName = $joinRequest->first_name . ' ' . $joinRequest->last_name;
 
-            Mail::to($joinRequest->email)->send(new SendrejectJoinRequest($doctorName, $message));
+        Mail::to($joinRequest->email)->send(new SendrejectJoinRequest($doctorName, $message));
 
         return response()->json([
             'message' => 'تم رفض طلب الانضمام بنجاح مع ارسال رسالة الرفض.',
             'rejection_message' => $message,
         ], 200);
     }
+    // جلب جميع طلبات الانضمام التي حالتها مقبولة
+    public function getAllJoinRequestsAprove()
+    {
+        $joinRequests = joinRequest::where('status', 'accepted')->get();
+
+        if ($joinRequests->isEmpty()) {
+            return response()->json([
+                'message' => 'لا توجد طلبات انضمام مقبولة حالياً.',
+                'data' => [],
+            ], 404);
+        }
+
+        $data = [];
+        foreach ($joinRequests as $joinRequest) {
+            // جلب التخصص المرتبط بالطلب
+            $specialization = specialization::find($joinRequest->specialization_id);
+
+            // تنظيف البريد من أي رموز غير مرغوبة
+            $cleanEmail = filter_var($joinRequest->email, FILTER_SANITIZE_EMAIL);
+
+            $data[] = [
+                'id' => $joinRequest->id,
+                'status' => $joinRequest->status,
+                'specializationName' => $specialization ? $specialization->name : null,
+                'firstName' => $joinRequest->first_name,
+                'lastName' => $joinRequest->last_name,
+                'email' => $cleanEmail,
+                'phone' => $joinRequest->phone,
+                'specializationId' => $joinRequest->specialization_id,
+                'dateOfBirth' => date('Y-m-d', strtotime($joinRequest->DateOfBirth)),
+                'nationality' => $joinRequest->Nationality,
+                'clinicAddress' => $joinRequest->ClinicAddress,
+                'consultationFee' => floatval($joinRequest->consultation_fee),
+                'emailVerifiedAt' => $joinRequest->email_verified_at ? date('Y-m-d H:i:s', strtotime($joinRequest->email_verified_at)) : null,
+                'imageUrl' => $joinRequest->image ? asset('storage/' . $joinRequest->image) : null,
+                'certificateCopyUrl' => $joinRequest->CertificateCopy ? asset('storage/' . $joinRequest->CertificateCopy) : null,
+                'CurriculumVitae_url' => $joinRequest->CurriculumVitae ? asset('storage/' . $joinRequest->CurriculumVitae) : null,
+                'professionalAssociationPhotoUrl' => $joinRequest->ProfessionalAssociationPhoto ? asset('storage/' . $joinRequest->ProfessionalAssociationPhoto) : null,
+            ];
+        }
+
+        return response()->json([
+            'message' => 'تم جلب طلبات الانضمام بنجاح.',
+            'data' => $data,
+        ], 200);
+    }
+
 }

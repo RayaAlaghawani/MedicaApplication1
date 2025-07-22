@@ -1,7 +1,6 @@
 <?php
 
 namespace Database\Seeders;
-
 use Carbon\Carbon;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -9,13 +8,14 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
-class DoctorSeeder extends Seeder
+class doctorSeeder extends Seeder
 {
     /**
      * Run the database seeds.
      */
     public function run(): void
     {
+
         $doctors = [
             [
                 'specialization_id' => 1,
@@ -23,7 +23,7 @@ class DoctorSeeder extends Seeder
                 'last_name' => 'Ali',
                 'email' => 'ahmed@example.com',
                 'email_verified_at' => Carbon::now(),
-                'image' => 'doctor_images/FV5NRmD1ihbqXabiJysXdLK5SLhMQ4VOWNwGk3yJ.jpg',
+                'image' => 'doctor_images/BdLKq10i6ZKLfZNXjrcJcQw7jhxPDymoQpXyxlT2.jpg',
                 'device_token' => 'token1',
                 'DateOfBirth' => '1980-05-01',
                 'phone' => '0100000001',
@@ -31,8 +31,8 @@ class DoctorSeeder extends Seeder
                 'CurriculumVitae' => 'cv_files/3fzjDpdarDDfW75M7LLnaEWqpXqk6fkRMXiFJU2e.pdf',
                 'Nationality' => 'Egyptian',
                 'ClinicAddress' => 'Cairo Street 1',
-                'ProfessionalAssociationPhoto' => 'association_photos/2BCWRrDv5HQWhy5EInKHSkaF7yYhsafCRfRSQQmy.jpg',
-                'CertificateCopy' => 'certificates/0gSLt1mWyD9iVYkk0l60hfu0c7wjGCHeCcJWj9LK.jpg',
+                'ProfessionalAssociationPhoto' => 'association_photos/0Q3vFmtbtnrQ4HJEVgOMLkBkW2oZeD85tgJbcunj.jpg',
+                'CertificateCopy' => 'certificates/YU6dedisiCUd9PHVXgr494xuIChkeWcTbfo5KvtX.jpg',
                 'consultation_fee' => 200.00,
                 'remember_token' => Str::random(10),
                 'created_at' => now(),
@@ -44,7 +44,7 @@ class DoctorSeeder extends Seeder
                 'last_name' => 'Hassan',
                 'email' => 'sara@example.com',
                 'email_verified_at' => Carbon::now(),
-                'image' => 'doctor_images/3swEaUeRpbav1HTC0aiCdevX10O85s9o0WDSbknT.jpg',
+                'image' => 'doctor_images/BdLKq10i6ZKLfZNXjrcJcQw7jhxPDymoQpXyxlT2.jpg',
                 'device_token' => 'token2',
                 'DateOfBirth' => '1990-03-15',
                 'phone' => '0100000002',
@@ -52,8 +52,8 @@ class DoctorSeeder extends Seeder
                 'CurriculumVitae' => 'cv_files/3fzjDpdarDDfW75M7LLnaEWqpXqk6fkRMXiFJU2e.pdf',
                 'Nationality' => 'Jordanian',
                 'ClinicAddress' => 'Amman Clinic',
-                'ProfessionalAssociationPhoto' => 'association_photos/2BCWRrDv5HQWhy5EInKHSkaF7yYhsafCRfRSQQmy.jpg',
-                'CertificateCopy' => 'certificates/0gSLt1mWyD9iVYkk0l60hfu0c7wjGCHeCcJWj9LK.jpg',
+                'ProfessionalAssociationPhoto' => 'association_photos/95GGiupvl5psooH1EKyKfPseiGwZcl5KgcIIHjhY.jpg',
+                'CertificateCopy' => 'certificates/YU6dedisiCUd9PHVXgr494xuIChkeWcTbfo5KvtX.jpg',
                 'consultation_fee' => 300.00,
                 'remember_token' => Str::random(10),
                 'created_at' => now(),
@@ -64,4 +64,3 @@ class DoctorSeeder extends Seeder
         DB::table('doctors')->insert($doctors);
     }
 }
-

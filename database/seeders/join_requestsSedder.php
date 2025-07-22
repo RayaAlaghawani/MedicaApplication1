@@ -13,8 +13,10 @@ class join_requestsSedder extends Seeder
     /**
      * Run the database seeds.
      */
+
     public function run(): void
     {
+
         $requests = [
             [
                 'specialization_id' => 1,
@@ -29,10 +31,10 @@ class join_requestsSedder extends Seeder
                 'DateOfBirth' => '1980-05-01',
                 'phone' => '0100000001',
                 'password' => Hash::make('password123'),
-                'CurriculumVitae' => 'Ahmed CV',
+                'CurriculumVitae' => 'cv_files/3fzjDpdarDDfW75M7LLnaEWqpXqk6fkRMXiFJU2e.pdf',
                 'Nationality' => 'Egyptian',
                 'ClinicAddress' => 'Cairo Street 1',
-                'ProfessionalAssociationPhoto' => 'association_photos/VuB2CTqvhkNAjILKM93dz3MkMF79M4RetRd0Oghy.jpg',
+                'ProfessionalAssociationPhoto' => 'association_photos/0Q3vFmtbtnrQ4HJEVgOMLkBkW2oZeD85tgJbcunj.jpg',
                 'CertificateCopy' => 'certificates/YU6dedisiCUd9PHVXgr494xuIChkeWcTbfo5KvtX.jpg',
                 'consultation_fee' => 200.00,
                 'remember_token' => Str::random(10),
@@ -52,10 +54,10 @@ class join_requestsSedder extends Seeder
                 'DateOfBirth' => '1990-03-15',
                 'phone' => '0100000002',
                 'password' => Hash::make('sara2024'),
-                'CurriculumVitae' => 'Sara CV',
+                'CurriculumVitae' => 'cv_files/3fzjDpdarDDfW75M7LLnaEWqpXqk6fkRMXiFJU2e.pdf',
                 'Nationality' => 'Jordanian',
                 'ClinicAddress' => 'Amman Clinic',
-                'ProfessionalAssociationPhoto' => 'association_photos/F88AZuiEVCJo7cmDQAhukxc48QNQZgS4MY7Q4Mmr.jpg',
+                'ProfessionalAssociationPhoto' => 'association_photos/95GGiupvl5psooH1EKyKfPseiGwZcl5KgcIIHjhY.jpg',
                 'CertificateCopy' => 'certificates/eoNEYaFxPjr8qKzqDP9PLG0JC5HURpQlcBpVebwP.jpg',
                 'consultation_fee' => 300.00,
                 'remember_token' => Str::random(10),
