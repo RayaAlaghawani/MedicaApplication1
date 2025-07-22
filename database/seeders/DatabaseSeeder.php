@@ -17,6 +17,8 @@ class DatabaseSeeder extends Seeder
 
             join_requestsSedder::class,
             doctorPendingSeeder::class,
+            DoctorSeeder::class,
+
         ]);
 
         // \App\Models\User::factory()->create([
