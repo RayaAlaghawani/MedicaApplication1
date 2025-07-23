@@ -12,6 +12,8 @@ use Illuminate\Notifications\Notifiable;
 class Patient extends Model
 {
     use  HasApiTokens,HasFactory, Notifiable;
+
+    protected $guarded = [];
     protected $fillable = [
         'name',
         'email',

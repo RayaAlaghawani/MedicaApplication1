@@ -45,7 +45,11 @@ Route::prefix('patient')->group(function () {
         Route::get('getAllSpecializations', [AppointmentController::class, 'getAllSpecializations']);
         Route::get('specializations/{id}/doctors', [AppointmentController::class, 'getDoctorsBySpecialization']);
         Route::get('doctor/{id}', [AppointmentController::class, 'getDoctorById']);
-        Route::get('available-slots/{doctor_id}/{day_of_week}', [AppointmentController::class, 'getAvailableSlots']);
+       // Route::get('available-slots/{doctor_id}/{day_of_week}', [AppointmentController::class, 'getAvailableSlots']);
+
+        Route::post('appointments/available/{doctor_id}', [AppointmentController::class, 'availableSlots']);
+        Route::post('AppointmentsBook/{doctor_id}', [AppointmentController::class, 'store']);
+        Route::get('myAppointments', [AppointmentController::class, 'myAppointments']);
 
     });    });
 

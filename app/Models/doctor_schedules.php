@@ -7,6 +7,15 @@ use Illuminate\Database\Eloquent\Model;
 
 class doctor_schedules extends Model
 {
+
+
+
+
+
+
+    protected $guarded = [];
+
+
     protected $fillable = ['doctor_id', 'day_of_week', 'start_time', 'end_time', 'slot_duration'];
 /////////
      protected $appends =['day_name'];
@@ -19,7 +28,7 @@ class doctor_schedules extends Model
 //////
     public function doctor()
     {
-        return $this->belongsTo(Doctor::class);
+        return $this->belongsTo(doctor::class);
     }
     protected $casts = [
         'day_of_week' => 'integer',

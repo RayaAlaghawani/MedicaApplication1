@@ -11,6 +11,8 @@ class doctor extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
 
+    protected $guarded = [];
+
     protected $fillable = [
         'specialization_id',
         'first_name',
