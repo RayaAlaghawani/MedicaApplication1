@@ -52,6 +52,8 @@ Route::prefix('patient')->group(function () {
 
         Route::post('appointments/{appointment_id}', [AppointmentController::class, 'update']);
         Route::get('myAppointments', [AppointmentController::class, 'myAppointments']);
+        Route::post('appointmentsCancel/{appointment_id}', [AppointmentController::class, 'cancelAppointment']);
+
 
     });    });
 
