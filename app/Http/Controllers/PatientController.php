@@ -252,12 +252,7 @@ class PatientController extends Controller
     }
 
     ///////show specialization
-    ///
-    ///
-    ///
-    ///
-    ///
-    ///
+
     public function addspecialization(Request $request)
     {
         try {
