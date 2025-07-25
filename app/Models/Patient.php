@@ -8,7 +8,6 @@ use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Notifications\Notifiable;
 
 
-
 class Patient extends Model
 {
     use  HasApiTokens,HasFactory, Notifiable;
@@ -66,6 +65,12 @@ class Patient extends Model
         return $this->hasMany(favourite::class);
     }
 
+// app/Models/Patient.php
+
+    public function complaints()
+    {
+        return $this->hasMany(Complaint::class);
+    }
 
 
 }
