@@ -7,6 +7,7 @@ use App\Models\doctor;
 use App\Models\Patient;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use function PHPUnit\Framework\isEmpty;
 
 class patientList extends Controller
 {
@@ -128,10 +129,24 @@ class patientList extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    //عرض المرضى المحظورين
+    public function showunbanedPatient()
     {
 
-        //
+$patient=Patient::where('is_banned',true)->get();
+if(!$patient){
+        return response()->json([
+            'message' => 'لا يوجد مرضى محظورين حاليا.',
+        ], 404);
+    }
+
+
+        return response()->json([
+            'message' => 'هذه قائمة المرضى المحظورين.',
+            'data'=>patientResource::collection($patient)
+        ], 200);
+
+
     }
 
     /**
@@ -139,7 +154,7 @@ class patientList extends Controller
      */
     public function edit(string $id)
     {
-        //
+
     }
 
     /**
@@ -147,7 +162,6 @@ class patientList extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
     }
 
     /**
@@ -155,6 +169,6 @@ class patientList extends Controller
      */
     public function destroy(string $id)
     {
-        //
+
     }
 }

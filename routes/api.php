@@ -83,7 +83,8 @@ Route::prefix('admin')->group(function() {
         Route::post('searchforPatient', [\App\Http\Controllers\patientList::class, 'searchforPatient']);
         Route::post('banPatient/{id}', [\App\Http\Controllers\patientList::class, 'banPatient']);
         Route::post('Unban/{id}', [\App\Http\Controllers\patientList::class, 'Unban']);
-
+        Route::get('showunbanedPatient', [\App\Http\Controllers\patientList::class, 'showunbanedPatient']);
+//قسم حجوزات
     });});
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
