@@ -3,6 +3,7 @@
 use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\authadmincontroller;
 use App\Http\Controllers\authdoctorcontroller;
+use App\Http\Controllers\FavouriteController;
 use App\Http\Controllers\joinRequests;
 use App\Http\Controllers\PatientController;
 use App\Http\Controllers\weekly_schedules;
@@ -53,7 +54,10 @@ Route::prefix('patient')->group(function () {
         Route::post('appointments/{appointment_id}', [AppointmentController::class, 'update']);
         Route::get('myAppointments', [AppointmentController::class, 'myAppointments']);
         Route::post('appointmentsCancel/{appointment_id}', [AppointmentController::class, 'cancelAppointment']);
-
+      /////////////////favourite
+        Route::post('addfav/{doctor_id}', [FavouriteController::class, 'addToFavourite']);
+        Route::delete('removefav/{doctor_id}', [FavouriteController::class, 'removeFromFavourite']);
+        Route::get('getfav', [FavouriteController::class, 'getFavourite']);
 
     });    });
 

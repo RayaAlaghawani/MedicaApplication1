@@ -58,4 +58,14 @@ class Patient extends Model
     }
 
 
+
+    // app/Models/Patient.php
+
+    public function favourites()
+    {
+        return $this->hasMany(favourite::class);
+    }
+
+
+
 }
