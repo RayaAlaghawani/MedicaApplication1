@@ -60,4 +60,15 @@ class doctor extends Authenticatable
         return $this->hasMany(appointments::class);
     }
 
+
+
+    // app/Models/Patient.php
+
+    public function favourites()
+    {
+        return $this->hasMany(favourite::class);
+    }
+
+
+
 }

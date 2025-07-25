@@ -13,6 +13,19 @@ return new class extends Migration
     {
         Schema::create('favourites', function (Blueprint $table) {
             $table->id();
+
+
+            // ربط بالعلاقات
+            $table->foreignId('patient_id')->constrained('patients')->onDelete('cascade');
+            $table->foreignId('doctor_id')->constrained('doctors')->onDelete('cascade');
+
+            // حقل لتحديد ما إذا الطبيب مفضل
+            $table->boolean('is_favorite')->default(true);
+
+
+
+            // تأكد من عدم تكرار نفس الطبيب للمريض
+            $table->unique(['patient_id', 'doctor_id']);
             $table->timestamps();
         });
     }
