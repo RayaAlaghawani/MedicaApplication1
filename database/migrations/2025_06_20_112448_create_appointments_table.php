@@ -18,6 +18,7 @@ return new class extends Migration
             $table->date('appointment_date'); // مثال: 2025-07-17
             $table->time('appointment_time'); // مثال: 09:00:00
             $table->enum('status', ['pending', 'confirmed', 'cancelled'])->default('pending');
+            $table->enum('reason_reservation', ['First_Visit', 'Follow_up'])->default('First_Visit');
             $table->timestamps();
         });
     }
