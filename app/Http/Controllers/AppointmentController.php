@@ -346,6 +346,8 @@ class AppointmentController extends Controller
             'data' => $appointment
         ], 200);
     }
+
+
     public function cancelAppointment($appointment_id)
     {
         $patient = Auth::guard('api-patient')->user();
@@ -365,24 +367,26 @@ class AppointmentController extends Controller
             return response()->json(['message' => 'لا تملك صلاحية إلغاء هذا الموعد'], 403);
         }
 
-        // تحقق من وقت الموعد: فقط لا تسمح إذا الموعد مضى بالفعل
-//        $appointmentDateTime = Carbon\Carbon::parse($appointment->appointment_date . ' ' . $appointment->appointment_time);
-//        $now = Carbon\Carbon::now();
-
         $appointmentDateTime = Carbon::parse($appointment->appointment_date . ' ' . $appointment->appointment_time);
         $now = Carbon::now();
 
-
+        // تحقق إن الموعد مضى بالفعل
         if ($appointmentDateTime->isPast()) {
             return response()->json(['message' => 'لا يمكن إلغاء موعد مضى وقته'], 400);
         }
 
-        // إلغاء الموعد (نحدث حالته إلى "cancelled")
+        // تحقق إن الموعد لم يتبق عليه أقل من ساعة
+        if ($now->diffInMinutes($appointmentDateTime, false) < 60) {
+            return response()->json(['message' => 'لا يمكن إلغاء الموعد قبل أقل من ساعة من الموعد'], 400);
+        }
+
+        // إلغاء الموعد
         $appointment->status = 'cancelled';
         $appointment->save();
 
         return response()->json(['message' => 'تم إلغاء الموعد بنجاح'], 200);
     }
+
 
 
     public function myAppointments()
