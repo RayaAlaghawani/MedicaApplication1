@@ -416,6 +416,41 @@ class AppointmentController extends Controller
 
 
 
+    public function getNearestAppointment()
+    {
+        $patient = Auth::guard('api-patient')->user();
+
+        if (!$patient) {
+            return response()->json(['message' => 'المريض غير مسجل الدخول'], 401);
+        }
+
+        $now = Carbon::now();
+
+        $appointment = appointments::with('doctor')
+            ->where('patient_id', $patient->id)
+            ->where(function ($query) use ($now) {
+                $query->where('appointment_date', '>', $now->toDateString())
+                    ->orWhere(function ($query) use ($now) {
+                        $query->where('appointment_date', $now->toDateString())
+                            ->where('appointment_time', '>=', $now->format('H:i:s'));
+                    });
+            })
+            ->where('status', '!=', 'cancelled')
+            ->orderBy('appointment_date', 'asc')
+            ->orderBy('appointment_time', 'asc')
+            ->first();
+
+        if (!$appointment) {
+            return response()->json(['message' => 'لا يوجد مواعيد قادمة'], 404);
+        }
+
+        return response()->json([
+            'message' => 'تم جلب أقرب موعد بنجاح',
+            'data' => $appointment
+        ]);
+    }
+
+
 
 
 
@@ -470,5 +505,54 @@ class AppointmentController extends Controller
             'doctors' => $results,
         ], 200);
     }
+
+
+
+
+
+
+    public function getLatestDoctors(Request $request)
+    {
+        $limit = $request->get('limit', 5); // عدد الأطباء المطلوب، افتراضيًا 5
+
+        $doctors = \App\Models\Doctor::with('specialization')
+            ->orderBy('id', 'desc') // أو حسب created_at إذا متوفر
+            ->take($limit)
+            ->get();
+
+        $data = [];
+
+        foreach ($doctors as $doctor) {
+            $data[] = [
+                'id' => $doctor->id,
+                'firstName' => $doctor->first_name,
+                'lastName' => $doctor->last_name,
+                'email' => $doctor->email,
+                'phone' => $doctor->phone,
+                'specialization' => $doctor->specialization->name,
+                'clinicAddress' => $doctor->ClinicAddress,
+                'consultationFee' => floatval($doctor->consultation_fee),
+                'nationality' => $doctor->Nationality,
+                'dateOfBirth' => $doctor->DateOfBirth ? date('Y-m-d', strtotime($doctor->DateOfBirth)) : null,
+                'imageUrl' => $doctor->image ? asset('storage/' . $doctor->image) : null,
+                'certificateCopyUrl' => $doctor->CertificateCopy ? asset('storage/' . $doctor->CertificateCopy) : null,
+                'curriculumVitae' => $doctor->CurriculumVitae,
+                'professionalAssociationPhotoUrl' => $doctor->ProfessionalAssociationPhoto ? asset('storage/' . $doctor->ProfessionalAssociationPhoto) : null,
+            ];
+        }
+
+        return response()->json([
+            'message' => 'تم جلب أحدث الأطباء بنجاح.',
+            'doctors' => $data,
+        ], 200);
+    }
+
+
+
+
+
+
+
+
 
 }
