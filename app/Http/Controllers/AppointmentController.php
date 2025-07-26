@@ -303,6 +303,20 @@ class AppointmentController extends Controller
             return response()->json(['message' => 'لا يمكنك تعديل الموعد قبل أقل من ساعة من موعده'], 403);
         }
 
+
+        // تحقق هل الطبيب لديه دوام في التاريخ والوقت الجديد
+        $dayOfWeek = Carbon::parse($request->appointment_date)->dayOfWeekIso % 7;
+
+        $hasValidSchedule = \App\Models\doctor_schedules::where('doctor_id', $appointment->doctor_id)
+            ->where('day_of_week', $dayOfWeek)
+            ->whereTime('start_time', '<=', $request->appointment_time)
+            ->whereTime('end_time', '>', $request->appointment_time)
+            ->exists();
+
+        if (!$hasValidSchedule) {
+            return response()->json(['message' => 'الطبيب لا يعمل في هذا الوقت الجديد المحدد'], 400);
+        }
+
         // تحقق من صحة البيانات الجديدة
         $request->validate([
             'appointment_date' => 'required|date|after_or_equal:today',
