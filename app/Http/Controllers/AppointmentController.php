@@ -37,51 +37,92 @@ class AppointmentController extends Controller
     }
 
     /////عرض الاطباء داخل تخصص
+//    public function getDoctorsBySpecialization($specialization_id)
+//    {
+//
+//        $specializationExists = Specialization::where('id', $specialization_id)->exists();
+//        if (!$specializationExists) {
+//            return response()->json([
+//                'message' => 'التخصص غير موجود.',
+//                'doctors' => []
+//            ], 404);
+//        }
+//
+//        $doctors = \App\Models\doctor::where('specialization_id', $specialization_id)->get();
+//
+//        if ($doctors->isEmpty()) {
+//            return response()->json([
+//                'message' => 'لا يوجد أطباء لهذا التخصص.',
+//                'doctors' => []
+//            ], 404);
+//        }
+//
+//        $data = $doctors->map(function($doctor) {
+//            return [
+//                'id' => $doctor->id,
+//                'status' => $doctor->status,
+//                'firstName' => $doctor->first_name,
+//                'lastName' => $doctor->last_name,
+//                'email' => $doctor->email,
+//                'phone' => $doctor->phone,
+//                'specializationId' => $doctor->specialization_id,
+//                'dateOfBirth' => optional($doctor->DateOfBirth)->format('Y-m-d'),
+//                'nationality' => $doctor->Nationality,
+//                'clinicAddress' => $doctor->ClinicAddress,
+//                'consultationFee' => (float) $doctor->consultation_fee,
+//                'emailVerifiedAt' => $doctor->email_verified_at ? $doctor->email_verified_at->format('Y-m-d H:i:s') : null,
+//                'imageUrl' => $doctor->image ? asset('storage/' . $doctor->image) : null,
+//                'certificateCopyUrl' => $doctor->CertificateCopy ? asset('storage/' . $doctor->CertificateCopy) : null,
+//                'curriculumVitae' => $doctor->CurriculumVitae,
+//                'professionalAssociationPhotoUrl' => $doctor->ProfessionalAssociationPhoto ? asset('storage/' . $doctor->ProfessionalAssociationPhoto) : null,
+//            ];
+//        });
+//
+//        return response()->json([
+//            'message' => 'تم جلب الأطباء بنجاح.',
+//            'doctors' => $data
+//        ]);
+//    }
+
     public function getDoctorsBySpecialization($specialization_id)
     {
+        $specialization = \App\Models\Specialization::find($specialization_id);
+        if ($specialization) {
+            $doctors = \App\Models\Doctor::where('specialization_id', $specialization_id)->get();
 
-        $specializationExists = Specialization::where('id', $specialization_id)->exists();
-        if (!$specializationExists) {
+            $data = [];
+            foreach ($doctors as $doctor) {
+                $data[] = [
+                    'id' => $doctor->id,
+                    'status' => $doctor->status,
+                    'specializationName' => $specialization->name,
+                    'firstName' => $doctor->first_name,
+                    'lastName' => $doctor->last_name,
+                    'email' => $doctor->email,
+                    'phone' => $doctor->phone,
+                    'specializationId' => $doctor->specialization_id,
+                    'dateOfBirth' => date('Y-m-d', strtotime($doctor->DateOfBirth)),
+                    'nationality' => $doctor->Nationality,
+                    'clinicAddress' => $doctor->ClinicAddress,
+                    'consultationFee' => floatval($doctor->consultation_fee),
+                    'emailVerifiedAt' => $doctor->email_verified_at ? date('Y-m-d H:i:s', strtotime($doctor->email_verified_at)) : null,
+                    'imageUrl' => $doctor->image ? asset('storage/' . $doctor->image) : null,
+                    'certificateCopyUrl' => $doctor->CertificateCopy ? asset('storage/' . $doctor->CertificateCopy) : null,
+                    'curriculumVitae' => $doctor->CurriculumVitae,
+                    'professionalAssociationPhotoUrl' => $doctor->ProfessionalAssociationPhoto ? asset('storage/' . $doctor->ProfessionalAssociationPhoto) : null,
+                ];
+            }
+
             return response()->json([
-                'message' => 'التخصص غير موجود.',
-                'doctors' => []
-            ], 404);
+                'message' => 'تم جلب الأطباء ضمن هذا الاختصاص بنجاح.',
+                'data' => $data,
+            ], 200);
         }
-
-        $doctors = \App\Models\doctor::where('specialization_id', $specialization_id)->get();
-
-        if ($doctors->isEmpty()) {
-            return response()->json([
-                'message' => 'لا يوجد أطباء لهذا التخصص.',
-                'doctors' => []
-            ], 404);
-        }
-
-        $data = $doctors->map(function($doctor) {
-            return [
-                'id' => $doctor->id,
-                'status' => $doctor->status,
-                'firstName' => $doctor->first_name,
-                'lastName' => $doctor->last_name,
-                'email' => $doctor->email,
-                'phone' => $doctor->phone,
-                'specializationId' => $doctor->specialization_id,
-                'dateOfBirth' => optional($doctor->DateOfBirth)->format('Y-m-d'),
-                'nationality' => $doctor->Nationality,
-                'clinicAddress' => $doctor->ClinicAddress,
-                'consultationFee' => (float) $doctor->consultation_fee,
-                'emailVerifiedAt' => $doctor->email_verified_at ? $doctor->email_verified_at->format('Y-m-d H:i:s') : null,
-                'imageUrl' => $doctor->image ? asset('storage/' . $doctor->image) : null,
-                'certificateCopyUrl' => $doctor->CertificateCopy ? asset('storage/' . $doctor->CertificateCopy) : null,
-                'curriculumVitae' => $doctor->CurriculumVitae,
-                'professionalAssociationPhotoUrl' => $doctor->ProfessionalAssociationPhoto ? asset('storage/' . $doctor->ProfessionalAssociationPhoto) : null,
-            ];
-        });
 
         return response()->json([
-            'message' => 'تم جلب الأطباء بنجاح.',
-            'doctors' => $data
-        ]);
+            'message' => 'لا يوجد أطباء لهذا التخصص.',
+            'doctors' => []
+        ], 404);
     }
 
 
@@ -196,6 +237,21 @@ class AppointmentController extends Controller
             'appointment_date' => 'required|date|after_or_equal:today',
             'appointment_time' => 'required|date_format:H:i',
         ]);
+
+        // احصل على اليوم من تاريخ الحجز
+        $dayOfWeek = Carbon::parse($request->appointment_date)->dayOfWeekIso % 7;
+
+// تحقق هل لدى الطبيب دوام في هذا اليوم ويشمل هذا الوقت
+        $hasValidSchedule = \App\Models\doctor_schedules::where('doctor_id', $doctor_id)
+            ->where('day_of_week', $dayOfWeek)
+            ->whereTime('start_time', '<=', $request->appointment_time)
+            ->whereTime('end_time', '>', $request->appointment_time)
+            ->exists();
+
+        if (!$hasValidSchedule) {
+            return response()->json(['message' => 'الطبيب لا يعمل في هذا الوقت'], 400);
+        }
+
 
         // تحقق إذا الوقت محجوز
         $isBooked = appointments::where('doctor_id', $doctor_id)
@@ -336,5 +392,65 @@ class AppointmentController extends Controller
     }
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    public function searchDoctorByName(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string'
+        ]);
+
+        $search = $request->name;
+
+        $doctors = Doctor::with('specialization')
+            ->where('first_name', 'LIKE', "%$search%")
+            ->orWhere('last_name', 'LIKE', "%$search%")
+            ->get();
+
+        if ($doctors->isEmpty()) {
+            return response()->json([
+                'message' => 'لا يوجد أطباء بالاسم المطلوب.'
+            ], 404);
+        }
+
+        $results = $doctors->map(function ($doctor) {
+            return [
+                'id' => $doctor->id,
+                'first_name' => $doctor->first_name,
+                'last_name' => $doctor->last_name,
+                'email' => $doctor->email,
+                'phone' => $doctor->phone,
+                'DateOfBirth' => $doctor->DateOfBirth,
+                'Nationality' => $doctor->Nationality,
+                'image_url' => $doctor->image ? asset('storage/' . $doctor->image) : null,
+                'ClinicAddress' => $doctor->ClinicAddress,
+                'CurriculumVitae' => $doctor->CurriculumVitae,
+                'ProfessionalAssociationPhoto' => $doctor->ProfessionalAssociationPhoto,
+                'CertificateCopy' => $doctor->CertificateCopy,
+                'consultation_fee' => $doctor->consultation_fee,
+                'specialization_name' => optional($doctor->specialization)->name,
+                'created_at' => $doctor->created_at,
+                'updated_at' => $doctor->updated_at,
+            ];
+        });
+
+        return response()->json([
+            'message' => 'تم العثور على الأطباء.',
+            'doctors' => $results,
+        ], 200);
+    }
 
 }

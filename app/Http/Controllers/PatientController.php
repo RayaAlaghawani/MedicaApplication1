@@ -130,7 +130,7 @@ class PatientController extends Controller
                 'age' => $patient->age,
                 'email_verified' => $patient->email_verified,
             ],
-            'access_token' => $token,
+            'token' => $token,
         ], 201);
 
     }
@@ -189,16 +189,19 @@ class PatientController extends Controller
     {
         /** @var \App\Models\Patient $user */
         $user = auth('api-patient')->user();
+        $user->profile_image_url = $user->profile_image ? asset('storage/' . $user->profile_image) : null;
 
         return response()->json([
-            'patient' => [
-                'id' => $user->id,
-                'name' => $user->name,
-                'email' => $user->email,
-                'gender' => $user->gender,
-                'age' => $user->age,
-                'profile_image_url' => $user->profile_image_url, // هذا من Accessor في الـ model
-            ]
+//            'patient' => [
+//                'id' => $user->id,
+//                'name' => $user->name,
+//                'email' => $user->email,
+//                'gender' => $user->gender,
+//                'age' => $user->age,
+//                'profile_image_url' => $user->profile_image_url, // هذا من Accessor في الـ model
+//            ]
+            'message' => 'تم عرض الملف الشخصي بنجاح',
+            'patient' => $user,
         ]);
     }
     /////////profile
@@ -313,49 +316,7 @@ class PatientController extends Controller
     }
 
 
-    public function getDoctorsBySpecialization($specialization_id)
-    {
 
-
-
-            $specialization = \App\Models\specialization::where('id', $specialization_id)->get();
-            if ($specialization) {
-                $doctors = \App\Models\Doctor::where('specialization_id', $specialization_id)->get();
-
-
-
-                $data = [];
-                foreach ($doctors as $doctor) {
-                $data[] = [
-                    'id' => $doctor->id,
-                    'status' => $doctor->status,
-                   // 'specializationName' => $specialization ? $specialization->name : null,
-                    'firstName' => $doctor->first_name,
-                    'lastName' => $doctor->last_name,
-                    'email' => $doctor->email,
-                    'phone' => $doctor->phone,
-                    'specializationId' => $doctor->specialization_id,
-                    'dateOfBirth' => date('Y-m-d', strtotime($doctor->DateOfBirth)),
-                    'nationality' => $doctor->Nationality,
-                    'clinicAddress' => $doctor->ClinicAddress,
-                    'consultationFee' => floatval($doctor->consultation_fee),
-                    'emailVerifiedAt' => $doctor->email_verified_at ? date('Y-m-d H:i:s', strtotime($doctor->email_verified_at)) : null,
-                    'imageUrl' => $doctor->image ? asset('storage/' . $doctor->image) : null,
-                    'certificateCopyUrl' => $doctor->CertificateCopy ? asset('storage/' . $doctor->CertificateCopy) : null,
-                    'curriculumVitae' => $doctor->CurriculumVitae,
-                    'professionalAssociationPhotoUrl' => $doctor->ProfessionalAssociationPhoto ? asset('storage/' . $doctor->ProfessionalAssociationPhoto) : null,
-                ];
-                return response()->json([
-                    'message' => 'تم جلب طلبات الانضمام بنجاح.',
-                    'data' => $data,
-                ], 200);
-
-            }}
-                return response()->json([
-                    'message' => 'لا يوجد أطباء لهذا التخصص.',
-                    'doctors' => []
-                ], 404);
-            }
 
 ///////السجل الطبي
 ///
@@ -434,7 +395,7 @@ class PatientController extends Controller
             );
 
             return response()->json([
-                'message' => 'تم حفظ السجل الطبي للبالغ.',
+                'message' => 'تم حفظ المعلومات للمريض بنجاح .',
                 'medical_record' => $record
             ]);
 

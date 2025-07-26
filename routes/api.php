@@ -39,13 +39,18 @@ Route::prefix('patient')->group(function () {
         Route::post('medical-record/child', [PatientController::class, 'storeChildMedicalRecord']);
         Route::post('medical-record/adult', [PatientController::class, 'storeAdultMedicalRecord']);
 
-        Route::get('specializations', [PatientController::class, 'getAvailableSpecializations']);
-        Route::post('addspecialization', [PatientController::class, 'addspecialization']);
+      //  Route::get('specializations', [PatientController::class, 'getAvailableSpecializations']);
+       // Route::post('addspecialization', [PatientController::class, 'addspecialization']);
       //  Route::get('doctors-by-specialization/{id}', [PatientController::class, 'getDoctorsBySpecialization']);
 
+
+
 ////////////////////الحجوزات
+///
+        Route::post('searchDoctors', [AppointmentController::class, 'searchDoctorByName']);
+
         Route::get('getAllSpecializations', [AppointmentController::class, 'getAllSpecializations']);
-        Route::get('specializations/{id}/doctors', [AppointmentController::class, 'getDoctorsBySpecialization']);
+        Route::get('getDoctorsBySpecialization/{id}', [AppointmentController::class, 'getDoctorsBySpecialization']);
         Route::get('doctor/{id}', [AppointmentController::class, 'getDoctorById']);
        // Route::get('available-slots/{doctor_id}/{day_of_week}', [AppointmentController::class, 'getAvailableSlots']);
 
