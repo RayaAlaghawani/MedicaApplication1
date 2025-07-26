@@ -10,6 +10,7 @@ use App\Http\Controllers\weekly_schedules;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ComplaintController;
 
 /*
 |--------------------------------------------------------------------------
@@ -58,6 +59,11 @@ Route::prefix('patient')->group(function () {
         Route::post('addfav/{doctor_id}', [FavouriteController::class, 'addToFavourite']);
         Route::delete('removefav/{doctor_id}', [FavouriteController::class, 'removeFromFavourite']);
         Route::get('getfav', [FavouriteController::class, 'getFavourite']);
+
+
+        ////////Complaint
+        Route::post('addComplaint', [ComplaintController::class, 'addComplaint']);
+        Route::get('getComplaint', [ComplaintController::class, 'getComplaint']);
 
     });    });
 
