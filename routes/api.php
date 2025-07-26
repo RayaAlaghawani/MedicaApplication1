@@ -39,13 +39,18 @@ Route::prefix('patient')->group(function () {
         Route::post('medical-record/child', [PatientController::class, 'storeChildMedicalRecord']);
         Route::post('medical-record/adult', [PatientController::class, 'storeAdultMedicalRecord']);
 
-        Route::get('specializations', [PatientController::class, 'getAvailableSpecializations']);
-        Route::post('addspecialization', [PatientController::class, 'addspecialization']);
+      //  Route::get('specializations', [PatientController::class, 'getAvailableSpecializations']);
+       // Route::post('addspecialization', [PatientController::class, 'addspecialization']);
       //  Route::get('doctors-by-specialization/{id}', [PatientController::class, 'getDoctorsBySpecialization']);
 
+
+
 ////////////////////الحجوزات
+///
+        Route::post('searchDoctors', [AppointmentController::class, 'searchDoctorByName']);
+
         Route::get('getAllSpecializations', [AppointmentController::class, 'getAllSpecializations']);
-        Route::get('specializations/{id}/doctors', [AppointmentController::class, 'getDoctorsBySpecialization']);
+        Route::get('getDoctorsBySpecialization/{id}', [AppointmentController::class, 'getDoctorsBySpecialization']);
         Route::get('doctor/{id}', [AppointmentController::class, 'getDoctorById']);
        // Route::get('available-slots/{doctor_id}/{day_of_week}', [AppointmentController::class, 'getAvailableSlots']);
 
@@ -55,7 +60,10 @@ Route::prefix('patient')->group(function () {
         Route::post('appointments/{appointment_id}', [AppointmentController::class, 'update']);
         Route::get('myAppointments', [AppointmentController::class, 'myAppointments']);
         Route::post('appointmentsCancel/{appointment_id}', [AppointmentController::class, 'cancelAppointment']);
-      /////////////////favourite
+        Route::get('doctorslatest', [AppointmentController::class, 'getLatestDoctors']);
+        Route:: get('appointmentsnearest', [AppointmentController::class, 'getNearestAppointment']);
+
+        /////////////////favourite
         Route::post('addfav/{doctor_id}', [FavouriteController::class, 'addToFavourite']);
         Route::delete('removefav/{doctor_id}', [FavouriteController::class, 'removeFromFavourite']);
         Route::get('getfav', [FavouriteController::class, 'getFavourite']);
