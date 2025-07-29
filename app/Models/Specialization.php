@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Laravel\Sanctum\HasApiTokens;
 
-class specialization extends Model
+class Specialization extends Model
 {
     use HasFactory;
     use  HasApiTokens,HasFactory;
@@ -17,6 +17,10 @@ class specialization extends Model
             return $this->hasMany(doctor::class);
         }
   ////////////////////!!2
-
-
+//تعريف العلاقة مع جدول مقالات
+    public function articles()
+    {
+        return $this->hasMany(article::class);
+    }
+    ////////////////////!!
 }

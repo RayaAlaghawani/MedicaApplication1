@@ -39,7 +39,7 @@ class doctor extends Authenticatable
 
     public function specialization()
     {
-        return $this->belongsTo(specialization::class);
+        return $this->belongsTo(Specialization::class);
     }
 
     public function joinRequests()
@@ -60,13 +60,12 @@ class doctor extends Authenticatable
         return $this->hasMany(appointments::class);
     }
 
-
-
-    // app/Models/Patient.php
-
     public function favourites()
     {
         return $this->hasMany(favourite::class);
+    }
+    public function articles(){
+        return  $this->hasMany('article');
     }
 
 

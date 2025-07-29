@@ -30,11 +30,11 @@ class authdoctorcontroller extends Controller
             'password'                     => 'required|string|min:6|confirmed',
             'image'                        => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'DateOfBirth'                  => 'required|date',
-            'CurriculumVitae' => 'nullable|string|max:5000',
+            'CurriculumVitae'              => 'nullable|file|mimes:pdf,doc,docx|max:5120',
             'Nationality'                  => 'required|string|max:255',
             'ClinicAddress'                => 'required|string|max:500',
-            'ProfessionalAssociationPhoto' => 'required|nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            'CertificateCopy'              => 'required|file|mimes:pdf,jpg,jpeg,png|max:5120', //
+            'ProfessionalAssociationPhoto' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'CertificateCopy'              => 'required|file|mimes:pdf,jpg,jpeg,png|max:5120',
             'consultation_fee'             => 'required|numeric|min:0',
         ], [
             'email.unique' => 'email already exists!!',
@@ -42,10 +42,9 @@ class authdoctorcontroller extends Controller
         ]);
 
         if (doctorPending::where('email', $data['email'])->exists()) {
-            return response()->json([
-                'message' => 'email already exists!!',
-            ], 403);
+            return response()->json(['message' => 'email already exists!!'], 403);
         }
+
         if ($request->hasFile('CurriculumVitae')) {
             $data['CurriculumVitae'] = $request->file('CurriculumVitae')->store('cv_files', 'public');
         }
@@ -63,16 +62,19 @@ class authdoctorcontroller extends Controller
         }
 
         $data['password'] = bcrypt($request->password);
-        // $data['password'] = bcrypt($request->password);
 
         $user = doctorPending::create($data);
+
         emailverfication::where('email', $data['email'])->delete();
+
         $code = mt_rand(100000, 999999);
         emailverfication::create([
             'email' => $data['email'],
             'code'  => $code,
         ]);
+
         Mail::to($data['email'])->send(new SendEmailVervication($code));
+
         return response()->json([
             'message' => 'Registration success. Please check your email to verify your account',
         ], 201);
@@ -175,7 +177,8 @@ class authdoctorcontroller extends Controller
             'email_verified_at' => $user->email_verified_at,
             'image_url' => $user->image ? asset('storage/' . $user->image) : null,
             'CertificateCopy_url' => $user->CertificateCopy ? asset('storage/' . $user->CertificateCopy) : null,
-            'CurriculumVitae_url' => $user->CurriculumVitae ,
+            'CurriculumVitae_url' => $user->CurriculumVitae ?
+                asset('storage/' . $user->CurriculumVitae) : null,
             'ProfessionalAssociationPhoto_url' => $user->ProfessionalAssociationPhoto ? asset('storage/' . $user->ProfessionalAssociationPhoto) : null,
         ];
 
