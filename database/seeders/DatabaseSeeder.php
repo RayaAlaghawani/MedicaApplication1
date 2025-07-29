@@ -20,6 +20,7 @@ class DatabaseSeeder extends Seeder
             patientSeeder::class,
             doctor_schedules::class,
             secretarySeeder::class,
+            appointmentSeeder::class,
         ]);
 
         // \App\Models\User::factory()->create([

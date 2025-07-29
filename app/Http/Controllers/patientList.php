@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\patientResource;
+use App\Models\appointments;
 use App\Models\doctor;
 use App\Models\Patient;
 use Illuminate\Http\Request;
@@ -146,6 +147,12 @@ if(!$patient){
             'data'=>patientResource::collection($patient)
         ], 200);
 
+
+    }
+    //عرض حجوزات كلية للمرضى
+    public function indexAppoitmentsList()
+    {
+        $AppoitmentsLis =appointments::all();
 
     }
 
