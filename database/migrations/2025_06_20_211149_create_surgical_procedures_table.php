@@ -10,11 +10,12 @@ return new class extends Migration
     {
         Schema::create('surgical_procedures', function (Blueprint $table) {
             $table->id();
-            $table->string('name'); // اسم العملية أو اسم المريض حسب الحاجة
-            $table->enum('type', ['خاص', 'عام']); // نوع العملية
-            $table->date('procedure_date'); // تاريخ الإجراء
-            $table->text('notes')->nullable(); // ملاحظات (اختيارية)
-            $table->timestamps(); // created_at و updated_at
+            $table->string('name');
+            $table->$table->foreign('medical_visit')->references('id')->on('medical_visits')->onDelete('medical_visits');
+            $table->enum('type', ['خاص', 'عام']);
+            $table->date('procedure_date');
+            $table->text('notes')->nullable();
+            $table->timestamps();
         });
     }
 

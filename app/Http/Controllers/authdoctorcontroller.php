@@ -162,7 +162,6 @@ class authdoctorcontroller extends Controller
 
         $token = $user->createToken('Personal Access Token')->plainTextToken;
 
-        // تنسيق البيانات وإضافة روابط الصور والملفات
         $userData = [
             'id' => $user->id,
             'first_name' => $user->first_name,

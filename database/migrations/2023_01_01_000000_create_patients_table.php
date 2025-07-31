@@ -16,11 +16,11 @@ return new class extends Migration
             $table->string('name');
             $table->string('email')->unique();
             $table->string('password');
-            $table->boolean('is_banned')->default(false); // القيمة الافتراضية تكون false (غير محظور)
+            $table->boolean('is_banned')->default(false);
             $table->enum('gender', ['Male', 'Female', 'Other'])->nullable();
             $table->boolean('email_verified')->default(false);
             $table->string('email_verification_code')->nullable();
-            $table->string('profile_image')->nullable();  // **هنا الحقل الجديد**
+            $table->string('profile_image')->nullable();
             $table->integer('age');
 
             $table->timestamps();

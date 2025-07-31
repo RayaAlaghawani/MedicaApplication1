@@ -10,11 +10,12 @@ return new class extends Migration
     {
         Schema::create('past_diseases', function (Blueprint $table) {
             $table->id();
-            $table->string('name'); // اسم المرض
-            $table->enum('type', ['عام', 'خاص'])->default('عام'); // نوع المرض: عام أو خاص
-            $table->string('code')->nullable(); // رمز المرض (مثل رمز ICD)
-            $table->date('diagnosed_at')->nullable(); // تاريخ الإصابة
-            $table->text('description')->nullable(); // وصف إضافي
+            $table->string('name');
+            $table->enum('type', ['public', 'private'])->default('public');
+            $table->string('code')->nullable();
+            $table->date('diagnosed_at')->nullable();
+            $table->text('description')->nullable();
+            $table->foreignId('doctor_id')->constrained('doctors')->cascadeOnDelete()->default('1');
             $table->timestamps();
         });
     }

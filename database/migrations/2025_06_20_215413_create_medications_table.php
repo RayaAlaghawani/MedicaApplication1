@@ -9,14 +9,16 @@ return new class extends Migration {
     {
         Schema::create('medications', function (Blueprint $table) {
             $table->id();
-            $table->string('name'); // اسم الدواء
-            $table->string('dosage'); // جرعة الدواء (مثلاً 500mg)
-            $table->integer('frequency'); // عدد مرات التناول في اليوم
-            $table->date('start_date'); // تاريخ بدء الاستخدام
-            $table->date('end_date')->nullable(); // تاريخ التوقف (يمكن أن يكون فارغًا)
-            $table->text('notes')->nullable(); // ملاحظات
-            $table->enum('type', ['عام', 'خاص'])->default('خاص'); // نوع الدواء
-            $table->timestamps(); // created_at و updated_at
+            $table->string('name');
+            $table->$table->foreign('medical_visit')->references('id')->on('medical_visits')->onDelete('medical_visits');
+
+            $table->string('dosage');
+            $table->integer('frequency');
+            $table->date('start_date');
+            $table->date('end_date')->nullable();
+            $table->text('notes')->nullable();
+            $table->enum('type', ['عام', 'خاص'])->default('خاص');
+            $table->timestamps();
         });
     }
 

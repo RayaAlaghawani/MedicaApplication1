@@ -26,10 +26,7 @@ class joinRequests extends Controller
 
         $data = [];
         foreach ($joinRequests as $joinRequest) {
-            // جلب التخصص المرتبط بالطلب
             $specialization = specialization::find($joinRequest->specialization_id);
-
-            // تنظيف البريد من أي رموز غير مرغوبة
             $cleanEmail = filter_var($joinRequest->email, FILTER_SANITIZE_EMAIL);
 
             $data[] = [
@@ -166,10 +163,7 @@ class joinRequests extends Controller
 
         $data = [];
         foreach ($joinRequests as $joinRequest) {
-            // جلب التخصص المرتبط بالطلب
             $specialization = specialization::find($joinRequest->specialization_id);
-
-            // تنظيف البريد من أي رموز غير مرغوبة
             $cleanEmail = filter_var($joinRequest->email, FILTER_SANITIZE_EMAIL);
 
             $data[] = [

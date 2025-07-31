@@ -69,7 +69,6 @@ class weekly_schedules extends Controller
             ->where('day_of_week', $request->day_of_week)
             ->get();
 
-        // تحقق من عدم تعارض الأوقات
         foreach ($existingSchedules as $existingSchedule) {
             if (
                 $request->start_time < $existingSchedule->end_time &&
@@ -130,7 +129,6 @@ class weekly_schedules extends Controller
             ], 400);
         }
 
-        // تحقق من التعارض إذا تم تعديل day_of_week أو أوقات الموعد
         if ($request->filled('day_of_week') && $request->filled('start_time') && $request->filled('end_time')) {
             $conflicts = doctor_schedules::where('doctor_id', $doctor_id)
                 ->where('day_of_week', $updateData['day_of_week'])
@@ -176,7 +174,6 @@ class weekly_schedules extends Controller
             ], 404);
         }
 
-        // محاولة حذف الموعد
         $schedule->delete();
 
         return response()->json([

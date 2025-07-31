@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('join_requests', function (Blueprint $table) {
             $table->id();
-            $table->integer('specialization_id');  // ربط الطبيب بالتخصص
+            $table->integer('specialization_id');
 
             $table->enum('status', ['pending', 'accepted', 'rejected'])->default('pending');
             $table->foreignId('doctor_id')->nullable()->constrained('doctors');

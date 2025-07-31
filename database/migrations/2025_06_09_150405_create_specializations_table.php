@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('specializations', function (Blueprint $table) {
-            $table->bigIncrements('id');  // نوع id في جدول التخصصات
+            $table->bigIncrements('id');
             $table->string('name');
             $table->timestamps();
         });

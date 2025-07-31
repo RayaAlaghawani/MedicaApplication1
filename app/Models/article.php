@@ -11,7 +11,7 @@ class article extends Model
     protected $guarded=[];
     public function doctor()
     {
-        return $this->belongsTo(doctor::class); // doctor بحروف صغيرة
+        return $this->belongsTo(doctor::class);
     }
     public function specialization()
     {

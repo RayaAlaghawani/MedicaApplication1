@@ -31,7 +31,6 @@ class doctorList extends Controller
             'CertificateCopy' => 'required|file|mimes:pdf,jpg,jpeg,png|max:5120',
         ]);
 
-        // رفع الملفات إذا تم ارسالها
         if ($request->hasFile('CurriculumVitae')) {
             $data['CurriculumVitae'] = $request->file('CurriculumVitae')->store('cv_files', 'public');
         }
@@ -49,8 +48,7 @@ class doctorList extends Controller
         }
         $doctors = doctor::where('id', $id)->first();
         if ($doctors) {
-            $doctors->update($data); // ← تحديث الطبيب بدل إنشاء طبيب جديد
-
+            $doctors->update($data);
             return response()->json([
                 'message' => 'Doctor created successfully',
                 'data' => new DoctorResource($doctors),
@@ -124,7 +122,7 @@ class doctorList extends Controller
         }
         return response()->json([
             'message' => 'success',
-            'data' => DoctorResource::collection($data), // اجلب النتائج
+            'data' => DoctorResource::collection($data),
         ], 200);
     }
 
@@ -151,10 +149,8 @@ class doctorList extends Controller
             'phone.unique' => 'Phone already exists!',
         ]);
 
-        // تشفير كلمة المرور
         $data['password'] = Hash::make($request->password);
 
-        // إنشاء الطبيب
         $doctor = doctor::create($data);
 
         return response()->json([
@@ -273,7 +269,7 @@ class doctorList extends Controller
             unset($data['password']);
         }
         $doctor->update($data);
-        $doctor->refresh(); // يجلب أحدث نسخة من قاعدة البيانات
+        $doctor->refresh();
 
         return response()->json([
             'message' => 'Doctor updated successfully',

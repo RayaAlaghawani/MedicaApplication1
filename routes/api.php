@@ -1,5 +1,4 @@
 <?php
-
 use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\authadmincontroller;
 use App\Http\Controllers\authdoctorcontroller;
@@ -12,7 +11,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ComplaintController;
-
 /*
 |--------------------------------------------------------------------------
 | API Routes

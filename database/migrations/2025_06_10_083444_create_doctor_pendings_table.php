@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('doctor_pendings', function (Blueprint $table) {
             $table->id();
-           $table->integer('specialization_id');  // ربط الطبيب بالتخصص
+           $table->integer('specialization_id');
             $table->string('first_name');
             $table->timestamp('email_verified_at');
             $table->string('last_name');
@@ -28,7 +28,7 @@ return new class extends Migration
             $table->string('ClinicAddress');
             $table->string('ProfessionalAssociationPhoto')->nullable()->default('eeeeee');
             $table->string('CertificateCopy')->nullable()->default('jh');
-            $table->decimal('consultation_fee', 8, 2)->nullable();  // أجرة المعاينة للطبيب
+            $table->decimal('consultation_fee', 8, 2)->nullable();
             $table->rememberToken();
             $table->timestamps();
         });
