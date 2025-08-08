@@ -9,5 +9,10 @@ class medications extends Model
 {
     use HasFactory;
     protected $guarded=[];
+    public function RecordMedicals(){
+        return $this->belongsToMany(
+            RecordMedical::class,
+            'record_medical_medications',
+        );
 
-}
+}}

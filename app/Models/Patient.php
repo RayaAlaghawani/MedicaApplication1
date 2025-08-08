@@ -23,19 +23,13 @@ class Patient extends Model
         'age',
         'profile_image',
     ];
-
     protected $hidden = [
         'password',
     ];
-
     protected $casts = [
         'email_verified_at' => 'datetime',
         'password' => 'hashed', // Added: For automatic password hashing
     ];
-
-
-
-
     public function getProfileImageUrlAttribute()
     {
         if ($this->profile_image) {
@@ -58,19 +52,30 @@ class Patient extends Model
 
 
 
-    // app/Models/Patient.php
 
     public function favourites()
     {
         return $this->hasMany(favourite::class);
     }
 
-// app/Models/Patient.php
 
-    public function complaints()
+//معاينات
+    public function MedicalVisits()
     {
-        return $this->hasMany(Complaint::class);
+        return $this->hasMany(medical_visits::class);
+    }
+    public function doctors()
+    {
+        return $this->belongsToMany(doctor::class,'medical_visits');
     }
 
+    public function doctor_appointments()
+    {
+        return $this->belongsToMany(doctor::class,'appointments');
+    }
+    public function complaintpatient()
+    {
+        return $this->morphMany(Complaint::class, 'complaintable');
+    }
 
 }

@@ -12,25 +12,27 @@ use Illuminate\Support\Facades\Auth;
 class APPOINTMENTDOCTOR extends Controller
 {
     //عرض حجوزات كلية للطبيب
+
     public function indexAppoitmentsList()
     {
         $doctor_id = Auth::user()->id;
 
-        $AppoitmentsList =appointments::where('doctor_id',$doctor_id)->get();
-        if($AppoitmentsList->isEmpty()){
+        $AppoitmentsList = appointments::where('doctor_id', $doctor_id)->get();
+
+        if ($AppoitmentsList->isEmpty()) {
             return response()->json([
-                'message' => 'لا يوجد لديك حجوزات في التطبيق.',
+                'message' => 'You have no appointments in the application.',
                 'data' => [],
             ], 404);
-
         }
 
         return response()->json([
-            'message' => 'success.',
+            'message' => 'Success.',
             'data' => appointment::collection($AppoitmentsList),
         ], 200);
     }
-//البحث عن حجز
+
+    // Search for appointment
     public function searchforPatient(Request $request)
     {
         $validated = $request->validate([
@@ -38,10 +40,13 @@ class APPOINTMENTDOCTOR extends Controller
             'status' => 'nullable|string|in:pending,confirmed,cancelled',
             'patient_name' => 'nullable|string',
         ]);
+
         $appointment_date = $request->appointment_date;
         $status = $request->status;
         $patient_name = $request->patient_name;
+
         $query = appointments::query();
+
         if ($appointment_date) {
             $query->where('appointment_date', $appointment_date);
         }
@@ -50,24 +55,22 @@ class APPOINTMENTDOCTOR extends Controller
         }
         if ($patient_name) {
             $query->whereHas('patient', function ($Q) use ($patient_name) {
-                $Q->where('name','like' ,'%'.$patient_name.'%');
-
-            });}
-
-            $appointment = $query->get();
-            if ($appointment->isEmpty()) {
-                return response()->json([
-                    'message' => 'لم يتم العثور على أي حجوزات بالمواصفات المطلوبة.',
-                    'data' => [],
-                ], 404);
-
-
-            }
-            return response()->json([
-                'message' => 'تم جلب الحجوزات بنجاح.',
-                'data' => appointment::collection($appointment),
-            ], 200);
+                $Q->where('name', 'like', '%' . $patient_name . '%');
+            });
         }
 
-    }
+        $appointment = $query->get();
 
+        if ($appointment->isEmpty()) {
+            return response()->json([
+                'message' => 'No appointments found matching the specified criteria.',
+                'data' => [],
+            ], 404);
+        }
+
+        return response()->json([
+            'message' => 'Appointments retrieved successfully.',
+            'data' => appointment::collection($appointment),
+        ], 200);
+    }
+}

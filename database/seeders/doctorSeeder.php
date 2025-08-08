@@ -26,7 +26,7 @@ class doctorSeeder extends Seeder
                 'image' => 'doctor_images/BdLKq10i6ZKLfZNXjrcJcQw7jhxPDymoQpXyxlT2.jpg',
                 'device_token' => 'token1',
                 'DateOfBirth' => '1980-05-01',
-                'phone' => '0100000001',
+                'phone' => '0949954841',
                 'password' => Hash::make('password123'),
                 'CurriculumVitae' => 'cv_files/3fzjDpdarDDfW75M7LLnaEWqpXqk6fkRMXiFJU2e.pdf',
                 'Nationality' => 'Egyptian',

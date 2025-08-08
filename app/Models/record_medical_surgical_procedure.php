@@ -5,11 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class allergies extends Model
+class record_medical_surgical_procedure extends Model
 {
     use HasFactory;
     protected $guarded=[];
-public  function recordMedical(){
-    return $this->belongsTo(RecordMedical::class);
-}
+
 }

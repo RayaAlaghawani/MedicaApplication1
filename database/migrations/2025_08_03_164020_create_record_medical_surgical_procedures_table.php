@@ -11,15 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('favourites', function (Blueprint $table) {
+        Schema::create('record_medical_surgical_procedures', function (Blueprint $table) {
             $table->id();
-
-
-            $table->foreignId('patient_id')->constrained('patients')->onDelete('cascade');
-            $table->foreignId('doctor_id')->constrained('doctors')->onDelete('cascade');
-
-            $table->boolean('is_favorite')->default(true);
-            $table->unique(['patient_id', 'doctor_id']);
+            $table->foreignId('surgical_procedure_id')->constrained('surgical_procedures')->cascadeOnDelete();
+            $table->foreignId('record_medical_id')->constrained('record_medicals');
             $table->timestamps();
         });
     }
@@ -29,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('favourites');
+        Schema::dropIfExists('record_medical_surgical_procedures');
     }
 };

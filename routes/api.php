@@ -99,6 +99,13 @@ Route::prefix('admin')->group(function() {
 //بحث
         //بجث عن حجز
         //قسم شكاوي
+        Route::get('showallcomplaintPendingcomplaints', [\App\Http\Controllers\complaintadmin::class, 'showallcomplaintPendingcomplaints']);
+        Route::get('showallAcceptedcomplaints', [\App\Http\Controllers\complaintadmin::class, 'showallAcceptedcomplaints']);
+
+                Route::get('showallRejectedcomplaints', [\App\Http\Controllers\complaintadmin::class, 'showallRejectedcomplaints']);
+        Route::post('changStatusComplaint/{id}', [\App\Http\Controllers\complaintadmin::class, 'changStatusComplaint']);
+        Route::post('changStatusComplaints/{id}', [\App\Http\Controllers\complaintadmin::class, 'changStatusComplaints']);
+
         //منطق
         //احصائيات
         //اشعارات
@@ -118,7 +125,7 @@ Route::prefix('doctor')->group(function() {
     Route::middleware(['auth:doctor,api-doctor'])->group(function() {
         Route::post('logout_user ',[authdoctorcontroller::class,'logout_user']);
         /////////مواعيد طبيب///////////////////1
-        Route::post('update/{id}',[weekly_schedules::class,'update']);
+        Route::post('updateWeekly_schedules/{id}',[weekly_schedules::class,'update']);
         Route::post('delete/{id}',[weekly_schedules::class,'delete']);
         Route::post('store',[weekly_schedules::class,'store']);
         Route::get('index',[weekly_schedules::class,'index']);
@@ -141,14 +148,28 @@ Route::prefix('doctor')->group(function() {
         //قسم سكرتاريا
         //قسم مرضى
 
-        //قسم سجل طبي
-
-        //قسم اشعارات
-
-        //قسم احصائيات
+        Route::get('showPatient', [\App\Http\Controllers\Patientdoctor::class, 'showPatient']);
+        Route::post('searchPatient', [\App\Http\Controllers\Patientdoctor::class, 'searchPatient']);
+        Route::post('addPastDiseases/{id}', [\App\Http\Controllers\medicalController::class, 'addPastDiseases']);
+//اضافة امراض للسجل الطبي
+        Route::post('showPastDiseases/{id}', [\App\Http\Controllers\medicalController::class, 'showPastDiseases']);
+        Route::post('showDetailILL/{id}', [\App\Http\Controllers\medicalController::class, 'showDetailILL']);
+        Route::post('editPastDiseases/{id}', [\App\Http\Controllers\medicalController::class, 'editPastDiseases']);
+//اضافة فحوصات
+        Route::post('addexamination/{id}', [\App\Http\Controllers\medicalController::class, 'addexamination']);
+//قسم فحوصات
+        Route::post('addexamination/{id}', [\App\Http\Controllers\medicalController::class, 'addexamination']);
+        Route::post('showExaminations/{id}', [\App\Http\Controllers\medicalController::class, 'showExaminations']);
 
 ////////////////////////////////////////2
     });});
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////قسم سجل طبي
+Route::post('showMedicalrecord/{id}', [\App\Http\Controllers\medicalController::class, 'showMedicalrecord']);
+Route::post('updateMedicalRecord/{id}', [\App\Http\Controllers\medicalController::class, 'updateMedicalRecord']);
+
+
+
+
 

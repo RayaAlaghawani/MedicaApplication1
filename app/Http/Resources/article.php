@@ -25,7 +25,7 @@ class article extends JsonResource
             'published_at' => $this->published_at,
             'status' => $this->status,
             'image' => $this->image ? asset('storage/' . $this->image) : null,
-            'content_pdf_file' => $this->content_pdf_file ? asset('storage/' . $this->content_pdf_file) : null,
+            'content' => $this->content,
             'category' => $this->category,
             'summary' => $this->summary,
         ];

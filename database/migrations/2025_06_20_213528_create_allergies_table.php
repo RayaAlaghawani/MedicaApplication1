@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('allergies', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+          $table->foreignId('record_medical_id')->constrained('record_medicals');
             $table->string('allergy_type');
             $table->string('allergen');
             $table->text('reaction_description')->nullable();

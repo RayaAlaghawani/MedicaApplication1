@@ -14,12 +14,10 @@ class joinRequests extends Controller
 {
     public function getAllJoinRequests()
     {
-        // جلب جميع طلبات الانضمام التي حالتها معلقة
         $joinRequests = joinRequest::where('status', 'pending')->get();
-
         if ($joinRequests->isEmpty()) {
             return response()->json([
-                'message' => 'لا توجد طلبات انضمام معلقة حالياً.',
+                'message'=> 'لا توجد طلبات انضمام معلقة حالياً.',
                 'data' => [],
             ], 404);
         }
@@ -149,7 +147,6 @@ class joinRequests extends Controller
             'rejection_message' => $message,
         ], 200);
     }
-    // جلب جميع طلبات الانضمام التي حالتها مقبولة
     public function getAllJoinRequestsAprove()
     {
         $joinRequests = joinRequest::where('status', 'accepted')->get();

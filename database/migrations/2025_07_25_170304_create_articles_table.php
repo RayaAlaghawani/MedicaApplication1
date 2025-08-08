@@ -17,14 +17,14 @@ return new class extends Migration
         Schema::create('articles', function (Blueprint $table) {
             $table->id();
             $table->string('title');
-            $table->string('content_pdf_file');
+            $table->string('content');
             $table->string('image')->nullable();
             $table->string('category');
             $table->timestamp('published_at')->nullable();
-            $table->enum('status', ['draft', 'published', 'reviewing'])->default('draft'); // حالة المقال
+            $table->enum('status', ['draft', 'published', 'reviewing'])->default('draft');
             $table->text('summary')->nullable();
             $table->foreignId('doctor_id')->constrained('doctors')->cascadeOnDelete();
-            $table->foreignId('specialization_id')->constrained('specializations');  // ربط الطبيب بالتخصص
+            $table->foreignId('specialization_id')->constrained('specializations');
             $table->timestamps();
         });
     }

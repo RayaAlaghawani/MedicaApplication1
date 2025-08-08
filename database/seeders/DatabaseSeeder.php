@@ -21,11 +21,8 @@ class DatabaseSeeder extends Seeder
             doctor_schedules::class,
             secretarySeeder::class,
             appointmentSeeder::class,
+            ComplaintSeeder::class,
         ]);
 
-        // \App\Models\User::factory()->create([
-        //     'name' => 'Test User',
-        //     'email' => 'test@example.com',
-        // ]);
     }
 }

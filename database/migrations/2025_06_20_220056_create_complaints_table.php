@@ -13,14 +13,15 @@ return new class extends Migration
     {
         Schema::create('complaints', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('patient_id')->constrained()->onDelete('cascade');
+            $table->string('complaintable_type')->nullable();
+            $table->unsignedBigInteger('complaintable_id')->nullable();
             $table->string('subject');
             $table->text('message');
-
+            $table->enum('status', ['Pending', 'Accepted', 'Rejected'])->default('Pending');
+            $table->text('admin_response')->nullable();
+           // $table->unsignedBigInteger('admin_id')->nullable();
             $table->timestamps();
-        });
-    }
-
+        });}
     /**
      * Reverse the migrations.
      */

@@ -53,7 +53,10 @@ class doctor extends Authenticatable
     }
 
 
-
+    public function patientss()
+    {
+        return $this->belongsToMany(Patient::class,'appointments');
+    }
 
     public function appointments()
     {
@@ -64,10 +67,26 @@ class doctor extends Authenticatable
     {
         return $this->hasMany(favourite::class);
     }
-    public function articles(){
-        return  $this->hasMany('article');
+//معاينات
+    public function MedicalVisits()
+    {
+        return $this->hasMany(medical_visits::class);
     }
 
-
+    public function patients()
+    {
+        return $this->belongsToMany(Patient::class,'medical_visits');
+    }
+    public function Patients_appointments()
+    {
+        return $this->belongsToMany(Patient::class,'appointments');
+    }
+    public function PastDiseases(){
+        return  $this->hasMany(PastDiseasesTable::class);
+    }
+    public function complaintdoctor()
+    {
+        return $this->morphMany(Complaint::class, 'complaintable');
+    }
 
 }
