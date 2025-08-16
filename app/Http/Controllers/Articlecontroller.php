@@ -28,6 +28,24 @@ class Articlecontroller extends Controller
             'data' => \App\Http\Resources\article::collection($articles),
         ], 200);
     }
+// عرض كل مقالات للمريض
+    public function indexallArticles()
+    {
+      //  $doctor_id = Auth::user()->id;
+        $articles = article::all();
+
+        if ($articles->isEmpty()) {
+            return response()->json([
+                'message' => 'No articles available currently.',
+            ], 404);
+        }
+
+        return response()->json([
+            'message' => 'SUCCESS.',
+            'data' => \App\Http\Resources\article::collection($articles),
+        ], 200);
+    }
+
 
     /**
      * Show the form for creating a new resource.

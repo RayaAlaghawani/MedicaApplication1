@@ -59,6 +59,8 @@ Route::prefix('patient')->group(function () {
         Route::post('addfav/{doctor_id}', [FavouriteController::class, 'addToFavourite']);
         Route::delete('removefav/{doctor_id}', [FavouriteController::class, 'removeFromFavourite']);
         Route::get('getfav', [FavouriteController::class, 'getFavourite']);
+///articles
+        Route::get('indexallArticles', [\App\Http\Controllers\Articlecontroller::class, 'indexallArticles']);
 
 
         ////////Complaint
