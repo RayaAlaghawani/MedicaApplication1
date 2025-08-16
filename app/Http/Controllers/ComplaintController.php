@@ -23,7 +23,8 @@ class ComplaintController extends Controller
         ]);
 
         $complaint = Complaint::create([
-            'patient_id' => $patient->id,
+            'complaintable_type'=>'Patient',
+            'complaintable_id'=>$patient->id,
             'subject' => $validated['subject'],
             'message' => $validated['message'],
         ]);
@@ -36,7 +37,7 @@ class ComplaintController extends Controller
             'message' => 'تم إرسال الشكوى بنجاح.',
             'complaint' => [
                 'id' => $complaint->id,
-                'patient_id' => $patient->id,
+                'complaintable_id' => $patient->id,
                 'subject' => $complaint->subject,
                 'message' => $complaint->message,
                 'patient_name' => $patient->name,  // نصل للاسم من الكائن Auth
@@ -55,10 +56,13 @@ class ComplaintController extends Controller
             return response()->json(['message' => 'المريض غير مسجل الدخول'], 401);
         }
 
-        $complaints = $patient->complaints()->latest()->get();
-
-        return response()->json($complaints);
+        $complaints = $patient->complaintpatient()->latest()->get();
+        return response()->json([
+            'message' =>'success',
+            'data'=>$complaints,
+        ], 200);
     }
+
 
 ////////Complaint
 

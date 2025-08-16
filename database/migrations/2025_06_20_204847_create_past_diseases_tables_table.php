@@ -11,7 +11,8 @@ return new class extends Migration
         Schema::create('past_diseases', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->enum('type', ['عام', 'خاص'])->default('عام');
+            $table->foreignId('doctor_id')->nullable()->constrained('doctors');
+            $table->enum('type', ['public','private'])->default('public');
             $table->string('code')->nullable();
             $table->date('diagnosed_at')->nullable();
             $table->text('description')->nullable();

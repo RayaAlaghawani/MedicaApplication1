@@ -44,7 +44,7 @@ class PatientController extends Controller
 
 
         // إرسال كود التحقق بالإيميل
-        Mail::to($patient->email)->send(new EmailVerificationMail($verificationCode));
+   //     Mail::to($patient->email)->send(new EmailVerificationMail($verificationCode));
 
 //////////////////////////////////////////////////////
 

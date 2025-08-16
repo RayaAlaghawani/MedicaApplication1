@@ -59,9 +59,10 @@ class medicalController extends Controller
             'weight' => 'nullable|numeric|min:0|max:500',
             'height' => 'nullable|numeric|min:0|max:3',
             'blood_type' => 'nullable|in:A+,A-,B+,B-,AB+,AB-,O+,O-',
-            'diet_type' => 'nullable|in:Vegetarian,Regular,High Fat,Low Carb,Other',
-            'smokes' => 'nullable|in:1,0',
-            'exercises_regularly' => 'nullable|in:1,0',
+            'diet_type' => 'nullable|in:balanced,high_fat,high_sugar,vegetarian,irregular',
+            'is_smoker' => 'nullable|in:yes,no',
+            'drinks_alcohol'=>'nullable|in:yes,no',
+            'physical_activity_level' => 'nullable|in:active,moderate,low',
             'sleep_hours' => 'nullable|integer|min:0|max:24',
         ]);
 

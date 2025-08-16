@@ -15,6 +15,8 @@ class doctorSeeder extends Seeder
      */
     public function run(): void
     {
+// توليد 10 أطباء عشوائيين
+      //  \App\Models\Doctor::factory()->count(10)->create();
 
         $doctors = [
             [

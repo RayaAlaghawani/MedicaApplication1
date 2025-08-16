@@ -2,12 +2,13 @@
 
 namespace Database\Factories;
 
+use App\Http\Resources\appointment;
 use App\Models\appointments;
 use App\Models\Doctor;
 use App\Models\Patient;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-class appointmentsFactory extends Factory
+class AppointmentFactory extends Factory
 {
     protected $model = appointments::class;
 

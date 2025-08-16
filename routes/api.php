@@ -106,8 +106,23 @@ Route::prefix('admin')->group(function() {
         Route::post('changStatusComplaint/{id}', [\App\Http\Controllers\complaintadmin::class, 'changStatusComplaint']);
         Route::post('changStatusComplaints/{id}', [\App\Http\Controllers\complaintadmin::class, 'changStatusComplaints']);
 
-        //منطق
         //احصائيات
+        //عددحجوزات شهري
+        Route::get('reservations_chart', [\App\Http\Controllers\statistics::class, 'reservations_chart']);
+                Route::get('reservations_chart_weekly', [\App\Http\Controllers\statistics::class, 'reservations_chart_weekly']);
+                        Route::get('reservations_chart_yearly', [\App\Http\Controllers\statistics::class, 'reservations_chart_yearly']);
+                                Route::get('showcount_reservation', [\App\Http\Controllers\statistics::class, 'showcount_reservation']);
+        Route::get('showcount_reservation', [\App\Http\Controllers\statistics::class, 'showcount_reservation']);
+//
+        Route::get('countPatients', [\App\Http\Controllers\statistics::class, 'countPatients']);
+        Route::get('countDoctors', [\App\Http\Controllers\statistics::class, 'countDoctors']);
+
+        Route::get('showLastAppointments', [\App\Http\Controllers\statistics::class, 'showLastAppointments']);
+        Route::get('showLastpatients', [\App\Http\Controllers\statistics::class, 'showLastpatients']);
+        Route::get('showLastdoctors', [\App\Http\Controllers\statistics::class, 'showLastdoctors']);
+        Route::get('showLastsecretaries', [\App\Http\Controllers\statistics::class, 'showLastsecretaries']);
+        Route::get('showLastArticles', [\App\Http\Controllers\statistics::class, 'showLastArticles']);
+
         //اشعارات
     });});
 
