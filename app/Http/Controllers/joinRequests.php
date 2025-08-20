@@ -91,7 +91,7 @@ class joinRequests extends Controller
         ]);
         $message = 'تمت الموافقة على طلب انضمامك إلى المنصة بنجاح. يمكنك الآن تسجيل الدخول باستخدام بريدك الإلكتروني وكلمة المرور.';
 
-        Mail::to($joinRequest->email)->send(new SendapproveJoinRequest($message, $doctor->first_name));
+     //   Mail::to($joinRequest->email)->send(new SendapproveJoinRequest($message, $doctor->first_name));
 
         $specializationName = $doctor->specialization ? $doctor->specialization->name : null;
 

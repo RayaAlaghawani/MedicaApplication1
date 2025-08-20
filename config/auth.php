@@ -75,6 +75,20 @@ return [
         ],
 
 
+        /////secrtsry
+        'secretary' => [
+            'driver' => 'session',
+            'provider' => 'secretaries',
+        ],
+
+        'api-secretary' => [
+            'driver' => 'sanctum',
+            'provider' => 'secretaries',
+        ],
+
+
+
+
     ],
     /*
     |--------------------------------------------------------------------------
@@ -113,6 +127,14 @@ return [
             'driver' => 'eloquent',
             'model' => App\Models\Patient::class,
         ],
+
+        //////secrtary
+        'secretaries' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\secretary::class,
+        ],
+
+
 
     ],
 

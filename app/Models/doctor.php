@@ -89,4 +89,10 @@ class doctor extends Authenticatable
         return $this->morphMany(Complaint::class, 'complaintable');
     }
 
+
+    public function secretaries()
+    {
+        return $this->hasMany(secretary::class);
+    }
+
 }

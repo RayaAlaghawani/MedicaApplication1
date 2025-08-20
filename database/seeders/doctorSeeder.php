@@ -25,7 +25,7 @@ class doctorSeeder extends Seeder
                 'last_name' => 'Ali',
                 'email' => 'ahmed@example.com',
                 'email_verified_at' => Carbon::now(),
-                'image' => 'doctor_images/BdLKq10i6ZKLfZNXjrcJcQw7jhxPDymoQpXyxlT2.jpg',
+                'image' => 'doctor_images/ZW3II75BEHzddrm6TI5c71SRb7qXKOGAS0D33lPK.png',
                 'device_token' => 'token1',
                 'DateOfBirth' => '1980-05-01',
                 'phone' => '0949954841',

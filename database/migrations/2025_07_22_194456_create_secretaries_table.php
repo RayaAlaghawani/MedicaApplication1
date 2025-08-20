@@ -17,11 +17,11 @@ return new class extends Migration
             $table->string('email');
             $table->string('phone');
             $table->string('address');
-            $table->string('date_of_brith');
+            $table->date('date_of_birth');
             $table->string('image');
             $table->string('cv');
+            $table->string('password');
             $table->foreignId('doctor_id')->nullable()->constrained('doctors');
-
             $table->timestamps();
         });
     }
