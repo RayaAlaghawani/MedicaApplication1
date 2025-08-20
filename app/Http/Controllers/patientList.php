@@ -15,7 +15,7 @@ class patientList extends Controller
     /**
      * Display a listing of the resource.
      */
-    //عرض المرضى///
+
     public function showAllPatient()
     {
         $doctors = patient::all();

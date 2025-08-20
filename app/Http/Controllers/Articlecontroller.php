@@ -28,6 +28,24 @@ class Articlecontroller extends Controller
             'data' => \App\Http\Resources\article::collection($articles),
         ], 200);
     }
+// عرض كل مقالات للمريض
+    public function indexallArticles()
+    {
+        //  $doctor_id = Auth::user()->id;
+        $articles = article::all();
+
+        if ($articles->isEmpty()) {
+            return response()->json([
+                'message' => 'No articles available currently.',
+            ], 404);
+        }
+
+        return response()->json([
+            'message' => 'SUCCESS.',
+            'data' => \App\Http\Resources\article::collection($articles),
+        ], 200);
+    }
+
 
     /**
      * Show the form for creating a new resource.
@@ -80,7 +98,7 @@ class Articlecontroller extends Controller
 
         $data = $request->validate([
             'title' => 'string|max:255',
-            'content'=> 'required|string',
+            'content'=> 'string',
             'image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'status' => 'in:draft,published,reviewing',
             'summary' => 'nullable|string',
@@ -99,9 +117,9 @@ class Articlecontroller extends Controller
             $data['image'] = $request->file('image')->store('article_images', 'public');
         }
 
-        if ($request->has('content_pdf_file')) {
-            $data['content_pdf_file'] = $request->file('content_pdf_file')->store('cv_files', 'public');
-        }
+        // if ($request->has('content_pdf_file')) {
+        //  $data['content_pdf_file'] = $request->file('content_pdf_file')->store('cv_files', 'public');
+        //  }
 
         $article->update($data);
         $article->refresh();

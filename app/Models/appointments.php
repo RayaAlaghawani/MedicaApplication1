@@ -24,4 +24,5 @@ class appointments extends Model
 
 
 
+
 }

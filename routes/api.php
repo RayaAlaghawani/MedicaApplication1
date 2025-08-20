@@ -6,6 +6,7 @@ use App\Http\Controllers\FavouriteController;
 use App\Http\Controllers\joinRequests;
 use App\Http\Controllers\PatientController;
 use App\Http\Controllers\resetPasswordcontroller;
+use App\Http\Controllers\SecretariasController;
 use App\Http\Controllers\weekly_schedules;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -44,7 +45,10 @@ Route::prefix('patient')->group(function () {
         Route::get('getAllSpecializations', [AppointmentController::class, 'getAllSpecializations']);
         Route::get('getDoctorsBySpecialization/{id}', [AppointmentController::class, 'getDoctorsBySpecialization']);
         Route::get('doctor/{id}', [AppointmentController::class, 'getDoctorById']);
-       // Route::get('available-slots/{doctor_id}/{day_of_week}', [AppointmentController::class, 'getAvailableSlots']);
+            //
+        Route::get('show/{id}', [AppointmentController::class,'show']);
+
+        // Route::get('available-slots/{doctor_id}/{day_of_week}', [AppointmentController::class, 'getAvailableSlots']);
 
         Route::post('appointments/available/{doctor_id}', [AppointmentController::class, 'availableSlots']);
         Route::post('AppointmentsBook/{doctor_id}', [AppointmentController::class, 'store']);
@@ -64,6 +68,10 @@ Route::prefix('patient')->group(function () {
         ////////Complaint
         Route::post('addComplaint', [ComplaintController::class, 'addComplaint']);
         Route::get('getComplaint', [ComplaintController::class, 'getComplaint']);
+
+        /////المقالات
+        Route::get('indexallArticles', [\App\Http\Controllers\Articlecontroller::class, 'indexallArticles']);
+        http://127.0.0.1:8000/api/patient/indexallArticles
 
     });    });
 
@@ -86,7 +94,7 @@ Route::prefix('admin')->group(function() {
         Route::get('indexAllSpecialization', [\App\Http\Controllers\doctorList::class, 'indexAllSpecialization']);
         Route::post('addInformation/{id}', [\App\Http\Controllers\doctorList::class, 'addInformation']);
 //قسم سكرتاريا
-        Route::get('indexallSecretary', [\App\Http\Controllers\secretarias::class, 'indexallSecretary']);
+        Route::get('indexallSecretary', [\App\Http\Controllers\secretariasController::class, 'indexallSecretary']);
 //بحث
 //قسم المرضى///
         Route::get('showAllPatient', [\App\Http\Controllers\patientList::class, 'showAllPatient']);
@@ -145,7 +153,17 @@ Route::prefix('doctor')->group(function() {
 //قسم مواعيدي
         //ملاحظة اضافة مدلوير الحظر للمرضى
         //قسم اطباء الاخرين وتواصل معهم
-        //قسم سكرتاريا
+        //قسم سكرتاراي
+
+
+        //قسم راية سكرتاريا  هدى
+        Route::post('addSecretarias', [SecretariasController::class, 'addSecretarias']);
+
+
+
+
+
+
         //قسم مرضى
 
         Route::get('showPatient', [\App\Http\Controllers\Patientdoctor::class, 'showPatient']);
@@ -170,6 +188,29 @@ Route::post('showMedicalrecord/{id}', [\App\Http\Controllers\medicalController::
 Route::post('updateMedicalRecord/{id}', [\App\Http\Controllers\medicalController::class, 'updateMedicalRecord']);
 
 
+
+/// Route Secretary
+Route::prefix('secretary')->group(function() {
+
+
+
+
+    Route::post('loginSecretary', [SecretariasController::class, 'loginSecretary']);
+
+
+    Route::middleware(['auth:api-secretary'])->group(function (){
+       // logoutSecretary
+        Route::post('logoutSecretary', [SecretariasController::class, 'logoutSecretary']);
+        Route::get('getAllAppointments', [SecretariasController::class, 'allDoctorAppointments']);
+        Route::post('appointmentsby-date', [SecretariasController::class, 'doctorAppointmentsByDate']);
+       // getUpcomingAppointments
+         Route::get('getUpcomingAppointments', [SecretariasController::class, 'getUpcomingAppointments']);
+
+
+        Route::post('updateAppointmentStates/{id}', [SecretariasController::class, 'updateAppointmentStatus']);
+    });
+
+});
 
 
 

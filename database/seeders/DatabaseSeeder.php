@@ -19,7 +19,7 @@ class DatabaseSeeder extends Seeder
             doctorSeeder::class,
             patientSeeder::class,
             doctor_schedules::class,
-            secretarySeeder::class,
+        //    secretarySeeder::class,
             appointmentSeeder::class,
             ComplaintSeeder::class,
         ]);

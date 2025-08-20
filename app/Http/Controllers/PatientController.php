@@ -42,13 +42,7 @@ class PatientController extends Controller
 
         ]);
 
-
-        // إرسال كود التحقق بالإيميل
         Mail::to($patient->email)->send(new EmailVerificationMail($verificationCode));
-
-//////////////////////////////////////////////////////
-
-
 
         return response()->json([
             'message' => 'تم إنشاء الحساب، يرجى التحقق من البريد الإلكتروني بإدخال كود التفعيل',
@@ -73,10 +67,7 @@ class PatientController extends Controller
             $patient->email_verified = true;
             $patient->email_verification_code = null;
             $patient->save();
-
-            // توليد التوكن الآن بعد التحقق
             $token = $patient->createToken('auth_token')->plainTextToken;
-
             return response()->json([
                 'message' => 'تم التحقق من البريد الإلكتروني بنجاح.',
                 'token' => $token,
@@ -103,7 +94,6 @@ class PatientController extends Controller
             ], 401);
         }
 
-        // التأكد من تفعيل البريد الإلكتروني قبل تسجيل الدخول
         if (!$patient->email_verified) {
             return response()->json([
                 'message' => 'يرجى تفعيل البريد الإلكتروني أولاً'
@@ -111,14 +101,6 @@ class PatientController extends Controller
         }
 
         $token = $patient->createToken('auth_token')->plainTextToken;
-
-//        return response()->json([
-//            'message' => 'تم تسجيل الدخول بنجاح',
-//            'user' => $patient,
-//            'access_token' => $token,
-//            'token_type' => 'Bearer',
-//        ], 200);
-
 
         return response()->json([
             'message' => 'تم تسجيل الدخول بنجاح',
@@ -128,7 +110,7 @@ class PatientController extends Controller
                 'email' => $patient->email,
                 'gender' => $patient->gender,
                 'age' => $patient->age,
-                'email_verified' => $patient->email_verified,
+                //'email_verified' => $patient->email_verified,
             ],
             'token' => $token,
         ], 201);
@@ -141,15 +123,12 @@ class PatientController extends Controller
             'email' => 'required|email|exists:patients,email',
         ]);
 
-        // توليد رمز تحقق عشوائي
         $resetCode = rand(100000, 999999);
 
-        // تحديث المريض في قاعدة البيانات
         $patient = Patient::where('email', $request->email)->first();
         $patient->email_verification_code = $resetCode;
         $patient->save();
 
-        // إرسال الرمز على البريد
         Mail::to($patient->email)->send(new EmailVerificationMail($resetCode));
 
         return response()->json([
@@ -175,9 +154,8 @@ class PatientController extends Controller
             return response()->json(['message' => 'رمز التحقق غير صحيح'], 400);
         }
 
-        // تغيير كلمة المرور
         $patient->password = bcrypt($request->password);
-        $patient->email_verification_code = null; // حذف الرمز بعد الاستخدام
+        $patient->email_verification_code = null;
         $patient->save();
 
         return response()->json([
@@ -192,19 +170,11 @@ class PatientController extends Controller
         $user->profile_image_url = $user->profile_image ? asset('storage/' . $user->profile_image) : null;
 
         return response()->json([
-//            'patient' => [
-//                'id' => $user->id,
-//                'name' => $user->name,
-//                'email' => $user->email,
-//                'gender' => $user->gender,
-//                'age' => $user->age,
-//                'profile_image_url' => $user->profile_image_url, // هذا من Accessor في الـ model
-//            ]
             'message' => 'تم عرض الملف الشخصي بنجاح',
             'patient' => $user,
         ]);
     }
-    /////////profile
+    /////////update    profile
     public function updateProfile(Request $request)
 
     {
@@ -235,7 +205,6 @@ class PatientController extends Controller
 
         $user->fill($request->except('password', 'password_confirmation', 'profile_image'))->save();
 
-        // إضافة رابط الصورة الكامل
         $user->profile_image_url = $user->profile_image ? asset('storage/' . $user->profile_image) : null;
 
         return response()->json([
@@ -244,17 +213,33 @@ class PatientController extends Controller
         ]);
     }
 
-    //////////////log out
+//    //////////////log out
     public function logout()
     {
-        Auth::User()->currentAccessToken()->delete();
+      //  Auth::User()->currentAccessToken()->delete();
+
+        $patient = auth('api-patient')->user();
+
+        if ($patient && $patient->currentAccessToken()) {
+            $patient->currentAccessToken()->delete();
+
+
+            return response()->json([
+                'message' => 'Patient logged out successfully.',
+                'status' => 'success'
+            ], 200);
+        }
+
         return response()->json([
-            'message' => 'تم تسجيل الخروج بنجاح'
-        ], 200);
+            'message' => 'No patient found.',
+            'status' => 'error'
+        ], 401);
 
     }
 
-    ///////show specialization
+
+
+    ///////add specialization
 
     public function addspecialization(Request $request)
     {
@@ -288,6 +273,8 @@ class PatientController extends Controller
         }
     }
 
+    //////////AvailableSpecializations
+
     public function getAvailableSpecializations()
     {
         $specializations = Specialization::has('doctors')->pluck('name');
@@ -297,6 +284,7 @@ class PatientController extends Controller
         ]);
     }
 
+    //////////////////AllSpecializations
     public function getAllSpecializations()
     {
         try {
@@ -315,11 +303,8 @@ class PatientController extends Controller
         }
     }
 
-
-
-
 ///////السجل الطبي
-///
+
     public function storeChildMedicalRecord(Request $request)
     {
         try {
@@ -413,4 +398,5 @@ class PatientController extends Controller
 
 
 }
+
 
