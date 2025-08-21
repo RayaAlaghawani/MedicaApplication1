@@ -7,6 +7,7 @@ use App\Http\Resources\SecretaryResource;
 use App\Models\allergies;
 use App\Models\doctor;
 use App\Models\Examinations;
+use App\Models\medications;
 use App\Models\PastDiseasesTable;
 use App\Models\Patient;
 use App\Models\record_medical_past_disease;
@@ -62,7 +63,6 @@ class medicalController extends Controller
             'diet_type' => 'nullable|in:balanced,high_fat,high_sugar,vegetarian,irregular',
             'is_smoker' => 'nullable|in:yes,no',
             'drinks_alcohol'=>'nullable|in:yes,no',
-            'physical_activity_level' => 'nullable|in:active,moderate,low',
             'sleep_hours' => 'nullable|integer|min:0|max:24',
         ]);
 
@@ -231,6 +231,52 @@ class medicalController extends Controller
         ], 403);
     }
 
+//اضافة دواء
+    public function Addmedication(Request $request, $id): \Illuminate\Http\JsonResponse
+    {
+        $user = Auth::user();
+        if (!$user) {
+            return response()
+                ->json(['message' => 'Unauthorized: User not logged in.'], 401);
+        }
+        $doctor_id = $user->id;
+
+        $medication = medications::find($id);
+        if (!$medication) {
+            return response()->json([
+                'message' => '.',
+                'data' => [],
+            ], 404);
+        }
+
+        $data = $request->validate([
+            'name' => 'required|string|max:255',
+            'type' => 'required|in:Laboratory,Radiology',
+            'image_path' =>'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'exam_date' => 'nullable|date',
+            'summary' => 'required|string',
+        ]);
+        if($request->has('image_path')) {
+            $imagePath = $request->file('image_path')->store('Examination_images', 'public');
+        }
+
+        $Examinations= Examinations::create([
+            'name' => $data['name'],
+            'type' => $data['type'],
+            'image_path' => $imagePath,
+            'summary' => $data['diagnosed_at'] ?? null,
+            'exam_date' => $data['exam_date'],
+            'doctor_id' => $doctor_id,
+            'record_medical_id'=>$id
+        ]);
+
+        return response()->json([
+            'message' => 'Examinations  added successfully.',
+            'data' => new \App\Http\Resources\Examinations($Examinations),
+        ], 200);
+
+
+    }
 
     /**
      * Update the specified resource in storage.

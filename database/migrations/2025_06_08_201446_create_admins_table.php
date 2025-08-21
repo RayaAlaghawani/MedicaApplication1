@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('admin_name')->nullable();
             $table->string('role')->nullable();
-            $table->text('device_token')->nullable()->default('sffry');
+            $table->text('fcm_token')->nullable()->default('sffry');
             $table->string('email')->unique();
             $table->integer('wallet')->default(666);
             $table->string('password');

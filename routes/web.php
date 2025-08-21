@@ -1,5 +1,6 @@
 <?php
 use App\Http\controlles\NourController;
+use Google\Auth\Credentials\ServiceAccountCredentials;
 use Illuminate\support\facades\Route;
 
 /*
@@ -12,19 +13,21 @@ use Illuminate\support\facades\Route;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
-Route::prefix('blog')->group(function () {
-    Route::get('/', [PostsController::class, 'index'])->name('blog.index');
-    Route::get('/{id}', [PostsController::class, 'show'])->name('blog.show');
-    Route::get('/create', [PostsController::class, 'create'])->name('blog.create');
-    Route::post('/', [PostsController::class, 'store'])->name('blog.store');
-    Route::get('/edit/{id}', [PostsController::class, 'edit'])->name('blog.edit');
-    Route::patch('/{id}', [PostsController::class, 'update'])->name('blog.update');
-    Route::delete('/{id}', [PostsController::class, 'destroy'])->name('blog.destroy');
+Route::get('/get-firebase-token', function () {
+    // 1️⃣ مسار ملف JSON
+    $jsonPath = storage_path('app/awa-v2-8636d2ae5593.json');
+
+    // 2️⃣ تحديد scope المطلوب لإرسال إشعارات
+    $scopes = ['https://www.googleapis.com/auth/firebase.messaging'];
+
+    // 3️⃣ إنشاء credentials من الملف
+    $credentials = new ServiceAccountCredentials($scopes, $jsonPath);
+
+    // 4️⃣ الحصول على Access Token
+    $token = $credentials->fetchAuthToken();
+
+    return response()->json($token);
 });
-
-  
-
-
 
 
 

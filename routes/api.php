@@ -4,6 +4,7 @@ use App\Http\Controllers\authadmincontroller;
 use App\Http\Controllers\authdoctorcontroller;
 use App\Http\Controllers\FavouriteController;
 use App\Http\Controllers\joinRequests;
+use App\Http\Controllers\NotificationTestController;
 use App\Http\Controllers\PatientController;
 use App\Http\Controllers\resetPasswordcontroller;
 use App\Http\Controllers\SecretariasController;
@@ -24,7 +25,6 @@ use App\Http\Controllers\ComplaintController;
 */
 ////Route Patient
 Route::prefix('patient')->group(function () {
-
     Route::post('register', [PatientController::class, 'register']);
     Route::post('login', [PatientController::class, 'login']);
     Route::post('/verify-email/{id}', [PatientController::class, 'verifyEmail']);
@@ -73,7 +73,7 @@ Route::prefix('patient')->group(function () {
 
         /////المقالات
         Route::get('indexallArticles', [\App\Http\Controllers\Articlecontroller::class, 'indexallArticles']);
-        http://127.0.0.1:8000/api/patient/indexallArticles
+       // http://127.0.0.1:8000/api/patient/indexallArticles
 
     });    });
 
@@ -134,6 +134,9 @@ Route::prefix('admin')->group(function() {
         Route::get('showLastArticles', [\App\Http\Controllers\statistics::class, 'showLastArticles']);
 
         //اشعارات
+        Route::post('/sends', [NotificationTestController::class, 'sends']);
+
+
     });});
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -195,7 +198,7 @@ Route::prefix('doctor')->group(function() {
 //قسم فحوصات
         Route::post('addexamination/{id}', [\App\Http\Controllers\medicalController::class, 'addexamination']);
         Route::post('showExaminations/{id}', [\App\Http\Controllers\medicalController::class, 'showExaminations']);
-
+///////قسم اشعارات
 ////////////////////////////////////////2
     });});
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////

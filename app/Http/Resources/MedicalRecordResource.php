@@ -49,7 +49,6 @@ class MedicalRecordResource extends JsonResource
                 'height' => $this->height,
                 'blood_type' => $this->blood_type,
                 'diet_type' => $this->diet_type,
-                'drinks_alcohol' => $this->drinks_alcohol,
                 'physical_activity_level' => $this->physical_activity_level,
                 'sleep_hours' => $this->sleep_hours,
                 'is_smoker' => $this->is_smoker,

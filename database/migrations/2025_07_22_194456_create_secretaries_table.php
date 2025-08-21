@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('secretaries', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->text('fcm_token')->nullable()->default('sffry');
             $table->string('email');
             $table->string('phone');
             $table->string('address');

@@ -15,6 +15,8 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('email')->unique();
+            $table->text('fcm_token')->nullable()->default('sffry');
+
             $table->string('password');
             $table->boolean('is_banned')->default(false);
             $table->enum('gender', ['Male', 'Female', 'Other'])->nullable();

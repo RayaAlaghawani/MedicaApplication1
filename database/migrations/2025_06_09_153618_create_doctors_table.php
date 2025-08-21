@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('last_name');
             $table->string('email');
             $table->string('image')->nullable()->default('hh');
-            $table->text('device_token')->nullable()->default('sffry');
+            $table->text('fcm_token')->nullable()->default('sffry');
             $table->date('DateOfBirth');
             $table->string('phone');
             $table->string('password');

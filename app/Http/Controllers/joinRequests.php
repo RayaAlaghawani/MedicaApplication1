@@ -72,7 +72,6 @@ class joinRequests extends Controller
             'first_name' => $joinRequest->first_name,
             'last_name' => $joinRequest->last_name,
             'phone' => $joinRequest->phone,
-            'device_token' => $joinRequest->device_token,
             'image' => $joinRequest->image,
             'DateOfBirth' => $joinRequest->DateOfBirth,
             'CurriculumVitae' => $joinRequest->CurriculumVitae,

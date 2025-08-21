@@ -77,5 +77,9 @@ class Patient extends Model
     {
         return $this->morphMany(Complaint::class, 'complaintable');
     }
+    public function Notifiables()
+    {
+        return $this->morphMany(notification::class, 'notifiable');
+    }
 
 }

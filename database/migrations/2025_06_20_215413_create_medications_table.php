@@ -10,7 +10,6 @@ return new class extends Migration {
         Schema::create('medications', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-          //  $table->$table->foreign('medical_visit')->references('id')->on('medical_visits')->onDelete('medical_visits');
 
             $table->string('dosage');
             $table->integer('frequency');

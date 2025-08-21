@@ -41,7 +41,6 @@ return new class extends Migration
     $table->float('weight')->nullable();
     //عادات شخصية
         $table->enum('is_smoker', ['yes', 'no'])->nullable();
-    $table->enum('drinks_alcohol', ['yes', 'no'])->nullable();
     $table->enum('physical_activity_level', ['active', 'moderate', 'low'])->nullable();
     $table->unsignedTinyInteger('sleep_hours')->nullable();
     $table->enum('diet_type', ['balanced', 'high_fat', 'high_sugar', 'vegetarian', 'irregular'])->nullable();

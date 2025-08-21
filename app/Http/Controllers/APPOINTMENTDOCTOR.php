@@ -17,7 +17,8 @@ class APPOINTMENTDOCTOR extends Controller
     {
         $doctor_id = Auth::user()->id;
 
-        $AppoitmentsList = appointments::where('doctor_id', $doctor_id)->get();
+        $AppoitmentsList = appointments::where('doctor_id', $doctor_id)
+            ->get();
 
         if ($AppoitmentsList->isEmpty()) {
             return response()->json([

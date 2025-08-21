@@ -32,18 +32,11 @@ class secretary extends Model
     {
         return $this->belongsTo(doctor::class);
     }
+    public function Notifiables()
+    {
+        return $this->morphMany(notification::class, 'notifiable');
+    }
 
-//
-//
-//    public function getImageUrlAttribute()
-//    {
-//        return $this->image ? Storage::url($this->image) : null;
-//    }
-//
-//    public function getCvUrlAttribute()
-//    {
-//        return $this->cv ? Storage::url($this->cv) : null;
-//    }
 
 }
 
