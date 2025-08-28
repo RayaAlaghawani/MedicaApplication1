@@ -26,7 +26,9 @@ class RecordMedical extends Model
     public function Medications(){
         return $this->belongsToMany(
             medications::class,
-            'record_medical_medications',
+            'record_medical_medications','record_medical_id',
+            'medication_id',
+
         );
     }
 ////////////
@@ -37,12 +39,15 @@ class RecordMedical extends Model
 ////////
     public function Examinationss()
     {
-        return $this->hasMany(Examinations::class);
+        return $this->hasMany(examination::class);
     }
     public function surgical_proceduress(){
         return $this->belongsToMany(
             surgical_procedures::class,
             'record_medical_surgical_procedures',
+            'record_medical_id',
+            'surgical_procedure_id',
+
         );
 
     }

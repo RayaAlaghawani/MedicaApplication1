@@ -6,28 +6,24 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
-        Schema::create('allergies', function (Blueprint $table) {
+        Schema::create('examinations', function (Blueprint $table) {
             $table->id();
+            $table->string('name');
             $table->foreignId('doctor_id')->nullable()->constrained('doctors');
             $table->foreignId('record_medical_id')->constrained('record_medicals')->onDelete('cascade');
-            $table->string('allergy_type');
-            $table->string('allergen');
-            $table->enum('severity', ['mild', 'moderate', 'severe']);
-            $table->boolean('is_private')->default(false);
+            // اسم الفحص
+            $table->enum('type', ['Laboratory', 'Radiology']); // نوع الفحص
+            $table->text('summary'); // ملخص النتيجة
+            $table->string('image_path')->nullable(); // صورة/ملف مرفق
+            $table->date('exam_date')->nullable(); // تاريخ الفحص
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
-        Schema::dropIfExists('allergies');
+        Schema::dropIfExists('examinations');
     }
 };

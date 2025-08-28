@@ -9,14 +9,9 @@ return new class extends Migration {
     {
         Schema::create('medications', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-
-            $table->string('dosage');
-            $table->integer('frequency');
-            $table->date('start_date');
-            $table->date('end_date')->nullable();
-            $table->text('notes')->nullable();
-            $table->enum('type', ['عام', 'خاص'])->default('خاص');
+            $table->string('name');        // اسم الدواء
+            $table->foreignId('doctor_id')->nullable()->constrained('doctors');
+            $table->enum('type', ['public', 'private'])->default('private');
             $table->timestamps();
         });
     }

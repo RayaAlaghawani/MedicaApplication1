@@ -88,7 +88,7 @@ Route::prefix('admin')->group(function() {
         Route::post('approveJoinRequest/{id}', [joinRequests::class, 'approveJoinRequest']);
         Route::post('rejectJoinRequest/{id}', [joinRequests::class, 'rejectJoinRequest']);
         //قسم اطباء
-        Route::get('index', [\App\Http\Controllers\doctorList::class, 'index']);
+        Route::get('indexDoctors', [\App\Http\Controllers\doctorList::class, 'indexDoctors']);
         Route::post('search', [\App\Http\Controllers\doctorList::class, 'search']);
         Route::get('show/{id}', [\App\Http\Controllers\doctorList::class, 'show']);
         Route::post('store', [\App\Http\Controllers\doctorList::class, 'store']);
@@ -174,18 +174,44 @@ Route::prefix('doctor')->group(function() {
         //ملاحظة اضافة مدلوير الحظر للمرضى
         //قسم اطباء الاخرين وتواصل معهم
         //قسم سكرتاراي
+        Route::get('indexDoctors', [\App\Http\Controllers\doctorList::class, 'indexDoctors']);
+        Route::post('searchForDoctor', [\App\Http\Controllers\doctorList::class, 'searchForDoctor']);
 
 
         //قسم راية سكرتاريا  هدى
         Route::post('addSecretarias', [SecretariasController::class, 'addSecretarias']);
 
+        Route::get('indexallSecretaryForDoctor', [SecretariasController::class, 'indexallSecretaryForDoctor']);
 
 
 
 
 
         //قسم مرضى
+/////قسم ادوية
+        Route::post('Addmedication/{id}', [\App\Http\Controllers\medicalController::class, 'Addmedication']);
+        Route::post('showMedications/{id}', [\App\Http\Controllers\medicalController::class, 'showMedications']);
+        Route::post('editMedication/{id}', [\App\Http\Controllers\medicalController::class, 'editMedication']);
+//////قسم عمليات جراحية
+///
+        Route::post('addsurgical_procedure/{id}', [\App\Http\Controllers\medicalController::class, 'addsurgical_procedure']);
+        Route::post('showsurgical_procedures/{id}', [\App\Http\Controllers\medicalController::class, 'showsurgical_procedures']);
+        Route::post('editsurgical_procedure/{id}', [\App\Http\Controllers\medicalController::class,
+            'editsurgical_procedure']);
 
+///قسم حساسيات
+        Route::post('addallergies/{id}', [\App\Http\Controllers\medicalController::class, 'addallergies']);
+        Route::post('showallergies/{id}', [\App\Http\Controllers\medicalController::class, 'showallergies']);
+        Route::post('editallergies/{id}', [\App\Http\Controllers\medicalController::class,
+            'editallergies']);
+
+
+        ///قسم زيارات معاينات مرضى
+        Route::post('Addmedical_visit/{id}', [\App\Http\Controllers\medical_visits::class, 'Addmedical_visit']);
+        Route::post('showeMedical_visit/{id}', [\App\Http\Controllers\medical_visits::class, 'showeMedical_visit']);
+        Route::post('editmedical_visit/{id}', [\App\Http\Controllers\medical_visits::class,
+            'editmedical_visit']);
+/////////////////////////
         Route::get('showPatient', [\App\Http\Controllers\Patientdoctor::class, 'showPatient']);
         Route::post('searchPatient', [\App\Http\Controllers\Patientdoctor::class, 'searchPatient']);
         Route::post('addPastDiseases/{id}', [\App\Http\Controllers\medicalController::class, 'addPastDiseases']);
@@ -193,12 +219,17 @@ Route::prefix('doctor')->group(function() {
         Route::post('showPastDiseases/{id}', [\App\Http\Controllers\medicalController::class, 'showPastDiseases']);
         Route::post('showDetailILL/{id}', [\App\Http\Controllers\medicalController::class, 'showDetailILL']);
         Route::post('editPastDiseases/{id}', [\App\Http\Controllers\medicalController::class, 'editPastDiseases']);
-//اضافة فحوصات
-        Route::post('addexamination/{id}', [\App\Http\Controllers\medicalController::class, 'addexamination']);
 //قسم فحوصات
         Route::post('addexamination/{id}', [\App\Http\Controllers\medicalController::class, 'addexamination']);
+        Route::post('editExaminations/{id}', [\App\Http\Controllers\medicalController::class, 'editExaminations']);
         Route::post('showExaminations/{id}', [\App\Http\Controllers\medicalController::class, 'showExaminations']);
 ///////قسم اشعارات
+                Route::get('showNotification', [\App\Http\Controllers\NotificationTestController::class, 'showNotification']);
+
+                        Route::post('destroyNotifiable/{id}',
+                            [\App\Http\Controllers\NotificationTestController::class, 'destroyNotifiables']);
+
+///
 ////////////////////////////////////////2
     });});
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////

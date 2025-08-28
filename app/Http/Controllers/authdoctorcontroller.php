@@ -73,7 +73,7 @@ class authdoctorcontroller extends Controller
             'code'  => $code,
         ]);
 
-        Mail::to($data['email'])->send(new SendEmailVervication($code));
+      //  Mail::to($data['email'])->send(new SendEmailVervication($code));
 
         return response()->json([
             'message' => 'Registration success. Please check your email to verify your account',

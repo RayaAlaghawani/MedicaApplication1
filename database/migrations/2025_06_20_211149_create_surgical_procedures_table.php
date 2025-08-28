@@ -11,10 +11,9 @@ return new class extends Migration
         Schema::create('surgical_procedures', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-       //     $table->$table->foreign('medical_visit')->references('id')->on('medical_visits')->onDelete('medical_visits');
-            $table->enum('type', ['خاص', 'عام']);
-            $table->date('procedure_date');
-            $table->text('notes')->nullable();
+            $table->foreignId('doctor_id')->nullable()->constrained('doctors');
+            $table->enum('type', ['public', 'private']);
+            $table->date('procedure_date')->nullable();
             $table->timestamps();
         });
     }

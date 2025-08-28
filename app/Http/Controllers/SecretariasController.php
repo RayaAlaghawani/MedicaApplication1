@@ -57,60 +57,91 @@ class SecretariasController extends Controller
 
         if (!$doctor_id) {
             return response()->json([
-                'message' => 'فقط الطبيب يمكنه إنشاء سكرتيرة'
+                'message' => 'Only doctors can create secretaries.'
             ], 403);
         }
 
         $validatedData = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:secretaries,email',
-            'phone' => 'required|string|max:10',
-            'address' => 'required|string|max:255',
+            'name'          => 'required|string|max:255',
+            'email'         => 'required|email|unique:secretaries,email',
+            'phone'         => 'required|string|max:10',
+            'address'       => 'required|string|max:255',
             'date_of_birth' => 'required|date',
-            'image' => 'required|image|mimes:jpg,jpeg,png|max:2048',
-            'cv' => 'required|mimes:pdf,doc,docx|max:4096',
-            'password' => 'required|string|min:6|confirmed',
+            'image'         => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'cv'            => 'nullable|mimes:pdf,doc,docx|max:4096',
+            'password'      => 'required|string|min:6',
         ]);
 
-        $imagePath = $request->file('image')->store('secretaries/images', 'public');
-        $cvPath = $request->file('cv')->store('secretaries/cv', 'public');
+        if ($request->hasFile('image')) {
+            $validatedData['image'] = $request->file('image')->store('secretaries/images', 'public');
+        }
+
+        if ($request->hasFile('cv')) {
+            $validatedData['cv'] = $request->file('cv')->store('secretaries/cv', 'public');
+        }
+
         $doctorName = doctor::find($doctor_id)->name;
-        $secretary = \App\Models\Secretary::create([
-            'name' => $validatedData['name'],
-            'email' => $validatedData['email'],
-            'phone' => $validatedData['phone'],
-            'address' => $validatedData['address'],
-            'date_of_birth' => $validatedData['date_of_birth'],
-            'image' => $imagePath,
-            'cv' => $cvPath,
-            'password' => bcrypt($validatedData['password']),
-            'doctor_id' => $doctor_id,
-        ]);
 
+        $secretary = Secretary::create([
+            'name'          => $validatedData['name'],
+            'email'         => $validatedData['email'],
+            'phone'         => $validatedData['phone'],
+            'address'       => $validatedData['address'],
+            'date_of_birth' => $validatedData['date_of_birth'],
+            'image'         => $validatedData['image'] ?? null,
+            'cv'            => $validatedData['cv'] ?? null,
+            'password'      => bcrypt($validatedData['password']),
+            'doctor_id'     => $doctor_id,
+        ]);
 
         Mail::to($validatedData['email'])->send(
             new SecretaryWelcomeMail(
                 $validatedData['email'],
-                $validatedData['password'], // نرسل الكلمة الحقيقية هنا
+                $validatedData['password'],
                 $doctorName
             )
         );
+
         return response()->json([
-            'message' => 'تم إنشاء السكرتيرة بنجاح',
+            'message'   => 'Secretary created successfully.',
             'secretary' => [
-                'id' => $secretary->id,
-                'name' => $secretary->name,
-                'email' => $secretary->email,
-                'phone' => $secretary->phone,
-                'address' => $secretary->address,
+                'id'          => $secretary->id,
+                'name'        => $secretary->name,
+                'email'       => $secretary->email,
+                'phone'       => $secretary->phone,
+                'address'     => $secretary->address,
                 'date_of_birth' => $secretary->date_of_birth,
-                'imageUrl' => $secretary->image ? asset('storage/' . $secretary->image) : null,
-                'cvUrl' => $secretary->cv ? asset('storage/' . $secretary->cv) : null,
-                'doctor_id' => $secretary->doctor_id,
-                'created_at' => $secretary->created_at,
-                'updated_at' => $secretary->updated_at,
+                'imageUrl'    => $secretary->image ? asset('storage/' . $secretary->image) : null,
+                'cvUrl'       => $secretary->cv ? asset('storage/' . $secretary->cv) : null,
+                'doctor_id'   => $secretary->doctor_id,
+                'created_at'  => $secretary->created_at,
+                'updated_at'  => $secretary->updated_at,
             ]
         ], 201);
+    }
+//////////////عرض سكرنريا طبيب
+    public function indexallSecretaryForDoctor()
+    {
+        $user = Auth::user();
+        if (!$user) {
+            return response()->json(['message' => 'Unauthorized: User not logged in.'], 401);
+        }
+
+        $doctor_id = $user->id;
+        $doctor = doctor::where('id', $doctor_id)->first();
+        $secretaries = $doctor->secretaries;
+
+        if ($secretaries->isEmpty()) {
+            return response()->json([
+                'message' => 'No secretaries are registered in the application.',
+                'data' => [],
+            ], 404);
+        }
+
+        return response()->json([
+            'message' => 'All secretaries have been retrieved successfully.',
+            'data' => SecretaryResource::collection($secretaries),
+        ], 200);
     }
 
     /**

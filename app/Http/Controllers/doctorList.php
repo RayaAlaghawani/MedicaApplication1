@@ -21,6 +21,45 @@ class doctorList extends Controller
     /**
      * Display a listing of the resource.
      */
+    //بحث عن اطباء من اجل طبيب
+    public function searchForDoctor(Request $request)
+    {
+        $request->validate = ([
+            'first_name' => 'nullable|string',
+            'last_name' => 'nullable|string',
+            'specialization_name' => 'nullable|string',
+        ]);
+        $first_name = $request->first_name;
+        $last_name = $request->last_name;
+        $specialization_name = $request->specialization_name;
+
+        $query = doctor::query();
+        if ($first_name) {
+            $query->where('first_name', 'like', '%' . $first_name . '%');
+            if ($last_name) {
+                $query->where('last_name', 'like', '%' . $last_name . '%');
+            }
+            if ($specialization_name) {
+                $query->whereHas('specialization', function ($q) use ($specialization_name) {
+                    $q->where('name', $specialization_name);
+
+                });
+            }
+            $data = $query->get();
+            if ($data->isEmpty()) {
+                return response()->json([
+                    'message' => 'لم يتم العثور على أي اطباء بالمواصفات المطلوبة.',
+                    'data' => [],
+                ], 404);
+
+            }
+            return response()->json([
+                'message' => 'success',
+                'data' => DoctorResource::collection($data),
+            ], 200);
+        }
+    }
+
     //اضافة  صور وسيرة ذاتية طبيب
     public function addInformation(Request  $request,$id)
     {
@@ -63,9 +102,10 @@ class doctorList extends Controller
 
 
     //عرض// معلومات كل الاطياء//////
-    public function index()
+    public function indexDoctors()
     {
         $doctors = doctor::all();
+
 
         if ($doctors->isEmpty()) {
             return response()->json([

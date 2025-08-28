@@ -3,16 +3,21 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\MedicalRecordResource;
+use App\Http\Resources\MedicationResources;
 use App\Http\Resources\SecretaryResource;
 use App\Models\allergies;
 use App\Models\doctor;
+use App\Models\examination;
 use App\Models\Examinations;
 use App\Models\medications;
 use App\Models\PastDiseasesTable;
 use App\Models\Patient;
 use App\Models\record_medical_past_disease;
 use App\Models\RecordMedical;
+use App\Models\surgical_procedures;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Auth;
 use PhpParser\Node\Stmt\Foreach_;
 
@@ -230,7 +235,7 @@ class medicalController extends Controller
             'data' => new \App\Http\Resources\PastDiseasesTable($pastDisease),
         ], 403);
     }
-
+///////////////////////////////////////////////////////////
 //اضافة دواء
     public function Addmedication(Request $request, $id): \Illuminate\Http\JsonResponse
     {
@@ -240,48 +245,107 @@ class medicalController extends Controller
                 ->json(['message' => 'Unauthorized: User not logged in.'], 401);
         }
         $doctor_id = $user->id;
-
-        $medication = medications::find($id);
-        if (!$medication) {
+        $medicalrecord = RecordMedical::find($id);
+        if (!$medicalrecord) {
             return response()->json([
-                'message' => '.',
+                'message' => 'Medical record not found.',
+                'data' => [],
+            ], 404);
+        }
+        $data = $request->validate([
+            'name' => 'required|string|max:255',
+            'type' => 'required|in:public,private',
+        ]);
+        $medications= medications::create([
+            'name' => $data['name'],
+            'type' => $data['type'],
+            'doctor_id' => $doctor_id,
+        ]);
+        $medicalrecord->Medications()->attach($medications->id);
+        return response()->json([
+            'message' => 'Medication  added successfully.',
+            'data' => new MedicationResources($medications),
+        ], 201);}
+        ////////////////////////////////////////////////////////////////
+
+    //عرض ادوية المريض
+    public function showMedications($id)
+    {
+        $user = Auth::user();
+        if (!$user) {
+            return response()->json(['message' => 'Unauthorized: User not logged in.'], 401);
+        }
+        $doctor_id = $user->id;
+
+        $medicalrecord = RecordMedical::find($id);
+        if (!$medicalrecord) {
+            return response()->json([
+                'message' => 'Medical record not found.',
+                'data' => [],
+            ], 404);
+        }
+        $Medications = $medicalrecord->Medications;
+        $data = [];
+
+        foreach ($Medications as $Medication) {
+            if ($Medication->type === 'public' || $Medication->doctor_id == $doctor_id) {
+                $data[] = [
+                    'id'=>$Medication->id,
+                    'name' => $Medication->name,
+                ];
+            }
+        }
+        if (empty($data)) {
+            return response()->json([
+                'message' => 'No Medication found for this medical record.',
+                'data' => [],
+            ], 204);
+        }
+
+        return response()->json([
+            'message' => 'Medication  retrieved successfully.',
+            'data' => $data,
+        ], 200);
+    }
+
+    //تعديل دواء مريض
+    public function editMedication(Request $request, $id)
+    {
+        $user = Auth::user();
+        if (!$user) {
+            return response()->json(['message' => 'Unauthorized: User not logged in.'], 401);
+        }
+        $doctor_id = $user->id;
+
+
+        $medications= medications::where('id', $id)->first();
+
+        if (!$medications) {
+            return response()->json([
+                'message' => 'The medication you want to edit does not exist.',
                 'data' => [],
             ], 404);
         }
 
         $data = $request->validate([
-            'name' => 'required|string|max:255',
-            'type' => 'required|in:Laboratory,Radiology',
-            'image_path' =>'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            'exam_date' => 'nullable|date',
-            'summary' => 'required|string',
+            'name' => 'string|max:255',
+            'type' => 'in:public,private',
         ]);
-        if($request->has('image_path')) {
-            $imagePath = $request->file('image_path')->store('Examination_images', 'public');
+        if ($medications->doctor_id == $doctor_id) {
+            $medications->update($data);
+
+            return response()->json([
+                'message' => 'medications updated successfully.',
+                'data' => new MedicationResources($medications),
+            ], 200);
         }
-
-        $Examinations= Examinations::create([
-            'name' => $data['name'],
-            'type' => $data['type'],
-            'image_path' => $imagePath,
-            'summary' => $data['diagnosed_at'] ?? null,
-            'exam_date' => $data['exam_date'],
-            'doctor_id' => $doctor_id,
-            'record_medical_id'=>$id
-        ]);
-
         return response()->json([
-            'message' => 'Examinations  added successfully.',
-            'data' => new \App\Http\Resources\Examinations($Examinations),
-        ], 200);
-
-
+            'message' => 'You cannot edit the details of this medications because you are not the one who added it.',
+            'data' => new \App\Http\Resources\MedicationResources($medications),
+        ], 403);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    //تعديل ////////////////////////////////////
+////////////////////////////////////////////فحوصات
     //اضافة فحوصات للسجل الطبي
     public function addexamination(Request $request, $id)
     {
@@ -310,14 +374,14 @@ class medicalController extends Controller
             $imagePath = $request->file('image_path')->store('Examination_images', 'public');
         }
 
-        $Examinations= Examinations::create([
+        $Examinations= examination::create([
             'name' => $data['name'],
             'type' => $data['type'],
             'image_path' => $imagePath,
-            'summary' => $data['diagnosed_at'] ?? null,
-            'exam_date' => $data['exam_date'],
+            'summary' => $data['summary'] ?? null,
+            'exam_date' => Carbon::today()->toDateString(),
            'doctor_id' => $doctor_id,
-            'record_medical_id'=>$id
+            'record_medical_id'=>$medicalrecord->id
         ]);
 
         return response()->json([
@@ -328,9 +392,6 @@ class medicalController extends Controller
 
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     //عرض فحوصات المريض
     public function showExaminations(string $id)
     {
@@ -356,7 +417,7 @@ class medicalController extends Controller
             ], 204);
         }
 foreach ($Examinations as $Examination ){
-    if($Examination->is_private == false || $Examination->doctor_id == $doctor_id ){
+    if($Examination->type == "public" || $Examination->doctor_id == $doctor_id ){
         return response()->json([
             'message' => 'Examination  retrieved successfully.',
             'data' =>\App\Http\Resources\Examinations::collection($Examinations),
@@ -381,7 +442,7 @@ foreach ($Examinations as $Examination ){
         $doctor_id = $user->id;
 
 
-        $Examinations= Examinations::where('id', $id)->first();
+        $Examinations= examination::where('id', $id)->first();
 
         if (!$Examinations) {
             return response()->json([
@@ -391,18 +452,18 @@ foreach ($Examinations as $Examination ){
         }
 
         $data = $request->validate([
-            'name' => 'required|string|max:255',
-            'type' => 'required|in:Laboratory,Radiology',
+            'name' => 'nullable|string|max:255',
+            'type' => 'nullable|string|in:Laboratory,Radiology',
             'image_path' =>'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'exam_date' => 'nullable|date',
-            'summary' => 'required|string',
+            'summary' => 'nullable|string',
         ]);
 
         if ($Examinations->doctor_id == $doctor_id) {
             $Examinations->update($data);
 
             return response()->json([
-                'message' => '$Examinations updated successfully.',
+                'message' => 'Examinations updated successfully.',
                 'data' => new \App\Http\Resources\Examinations($Examinations),
             ], 200);
         }
@@ -412,7 +473,7 @@ foreach ($Examinations as $Examination ){
         ], 403);
     }
 
-    ////////////////////////
+    ///////////////////////////////////////////////////////////////////////////
     //اضافة حساسية للمريض
     public function addallergies(Request $request, $id)
     {
@@ -430,34 +491,29 @@ foreach ($Examinations as $Examination ){
             ], 404);
         }
 
-        $data = $request->validate([
-            'allergy_type' => 'required|string|max:255',
-            'allergen' => 'required|in:مخبري,شعاعي',
-            'reaction_description' => 'nullable|string|max:255',
-            'severity' => 'date',
-            'start_date' => 'required|nullable|string',
-            'notes' => 'required|nullable|string',
-            'is_private' => 'required|nullable|string',
+            $data = $request->validate([
+                'allergy_type'      => 'required|string|max:255',
+                'allergen'          => 'required|string|max:255',
+                'severity'          => 'required|in:mild,moderate,severe',
+                'is_private' => 'required|boolean',
         ]);
-        $pastDisease = PastDiseasesTable::create([
+        $allergies= allergies::create([
             'allergy_type' => $data['allergy_type'],
             'allergen' => $data['allergen'],
-            'reaction_description' => $data['reaction_description'] ?? null,
             'severity' => $data['severity'] ?? null,
-            'start_date' => $data['start_date'] ?? null,
-            'notes' => $data['notes'] ?? null,
             'is_private' => $data['is_private'] ?? null,
             'doctor_id' => $doctor_id,
+            'record_medical_id'=>$medicalrecord->id
+
         ]);
-        $medicalrecord->PastDiseasesTable()->attach($pastDisease->id);
 
         return response()->json([
-            'message' => 'Past disease added successfully.',
-            'data' => new \App\Http\Resources\PastDiseasesTable($pastDisease),
+            'message' => 'allergies  added successfully.',
+            'data' => new \App\Http\Resources\allergies($allergies),
         ], 200);
     }
-    //عرض حساسية مريض
-    public function showallergies(string $id)
+    //////////////////////////عرض حساسية مريض
+    public function showallergies( $id)
     {
         $user = Auth::user();
         if (!$user) {
@@ -473,26 +529,37 @@ foreach ($Examinations as $Examination ){
             ], 404);
         }
 
-        $Examinations = $medicalrecord->allergies;
+        $allergies = $medicalrecord->allergies;
 
 
-        if (empty($Examinations)) {
+        $allowedAllergies = [];
+        foreach ($allergies as $allergie) {
+            if (!$allergie->is_private || $allergie->doctor_id == $doctor_id) {
+                $allowedAllergies[] = $allergie;
+            }
+        }
+
+        if (empty($allowedAllergies)) {
             return response()->json([
-                'message' => 'No past allergies found for this medical record.',
-                'data' => [],
-            ], 200);
+                'message' => 'These allergies are private and can only be viewed by the doctor who added them.',
+                'data' => null,
+            ], 403);
         }
 
         return response()->json([
-            'message' => ' allergies retrieved successfully.',
-            'data' =>\App\Http\Resources\Examinations::collection($Examinations),
+            'message' => 'Allergies retrieved successfully.',
+            'data' => \App\Http\Resources\allergies::collection(collect($allowedAllergies)),
         ], 200);
     }
-
-
-    //تعديل حساسية مريض
+    //تعديل حساسية مريض//////////////////////////
     public function editallergies(Request $request, $id)
     {
+        $user = Auth::user();
+        if (!$user) {
+            return response()->json(['message' => 'Unauthorized: User not logged in.'], 401);
+        }
+        $doctor_id = $user->id;
+
         $allergies= allergies::where('id', $id)->first();
         if (!$allergies) {
             return response()->json([
@@ -502,30 +569,139 @@ foreach ($Examinations as $Examination ){
         }
 
         $data = $request->validate([
-            'allergy_type' => 'required|string|max:255',
-            'allergen' => 'required|in:مخبري,شعاعي',
-            'reaction_description' => 'nullable|string|max:255',
-            'severity' => 'date',
-            'start_date' => 'required|nullable|string',
-            'notes' => 'required|nullable|string',
-            'is_private' => 'required|nullable|string',
+            'allergy_type'      => 'string|max:255',
+            'allergen'          => 'string|max:255',
+            'severity'          => 'string|in:mild,moderate,severe',
+            'is_private'        => 'string|in:true,false',
+        ]);
+
+if ($allergies->doctor_id == $doctor_id) {
+$allergies->update($data);
+
+    return response()->json([
+        'message' => 'allergies updated successfully.',
+        'data' => new \App\Http\Resources\allergies($allergies),
+    ], 200);
+}
+return response()->json([
+    'message' => 'These allergie  are private and can only be viewed by the doctor who added them.',
+    'data' => null,
+], 403);
+}
+
+    /////////////////////////////////////////////////////عمليات جراحية
+    //اضافة عملية جراحية لمريض
+    public function addsurgical_procedure(Request $request, $id)
+    {
+        $user = Auth::user();
+        if (!$user) {
+            return response()->json(['message' => 'Unauthorized: User not logged in.'], 401);
+        }
+        $doctor_id = $user->id;
+
+        $medicalrecord = RecordMedical::find($id);
+        if (!$medicalrecord) {
+            return response()->json([
+                'message' => 'Medical record not found.',
+                'data' => [],
+            ], 404);
+        }
+
+        $data = $request->validate([
+            'name'      => 'required|string|max:255',
+            'type'          => 'required|string|in:public,private',
+        ]);
+        $surgical_procedures= surgical_procedures::create([
+            'name' => $data['name'],
+            'type' => $data['type'],
+            'doctor_id' => $doctor_id,
+            'procedure_date' => Carbon::today()->toDateString(),
 
 
         ]);
+        $medicalrecord->surgical_proceduress()->attach($surgical_procedures->id);
+        return response()->json([
+            'message' => 'surgical_procedure  added successfully.',
+            'data' => new \App\Http\Resources\allergies($surgical_procedures),
+        ], 200);
+    }
+    //عرض عمليات جراحية لمريض
+    public function showsurgical_procedures( $id)
+    {
+        $user = Auth::user();
+        if (!$user) {
+            return response()->json(['message' => 'Unauthorized: User not logged in.'], 401);
+        }
+        $doctor_id = $user->id;
 
-        $allergies->update($data);
+        $medicalrecord = RecordMedical::find($id);
+        if (!$medicalrecord) {
+            return response()->json([
+                'message' => 'Medical record not found.',
+                'data' => [],
+            ], 404);
+        }
+
+        $surgical_procedures = $medicalrecord->surgical_proceduress;
+        $allowedsurgical_procedure = [];
+        foreach ($surgical_procedures as $surgical_procedure) {
+            if ($surgical_procedure->type=="public" ||
+                $surgical_procedure->doctor_id == $doctor_id) {
+                $allowedsurgical_procedure[] = $surgical_procedure;
+            }
+        }
+        if (empty($allowedsurgical_procedure)) {
+            return response()->json([
+                'message' => 'These surgical_procedure are private and can only be viewed by the doctor who added them.',
+                'data' => null,
+            ], 403);
+        }
 
         return response()->json([
-            'message' => 'allergies updated successfully.',
-            'data' => new \App\Http\Resources\PastDiseasesTable($allergies),
+            'message' => 'surgical_procedure retrieved successfully.',
+            'data' => \App\Http\Resources\surgical_procedures::collection(collect($allowedsurgical_procedure)),
         ], 200);
     }
 
-    ////////////////////////////
-    //عرض ادوية المريض
-    //اضافة دواء لمريض
-    //تعديل دواء مريض
-    //عرض عمليات جراحية لمريض
+
     //تعديل عمليات جراحية لمريض
-    //اضافة عملية جراحية لمريض
+    public function editsurgical_procedure(Request $request, $id)
+    {
+        $user = Auth::user();
+        if (!$user) {
+            return response()->json(['message' => 'Unauthorized: User not logged in.'], 401);
+        }
+        $doctor_id = $user->id;
+
+        $surgical_procedures= surgical_procedures::where('id', $id)->first();
+        if (!$surgical_procedures) {
+            return response()->json([
+                'message' => 'The surgical_procedure you want to edit does not exist.',
+                'data' => [],
+            ], 404);
+        }
+
+        $data = $request->validate([
+            'allergy_type'      => 'string|max:255',
+            'allergen'          => 'string|max:255',
+            'severity'          => 'string|in:mild,moderate,severe',
+            'is_private'        => 'string|in:true,false',
+        ]);
+
+
+if ($surgical_procedures->doctor_id == $doctor_id) {
+$surgical_procedures->update($data);
+
+    return response()->json([
+        'message' => 'surgical_procedures updated successfully.',
+        'data' => new \App\Http\Resources\surgical_procedures($surgical_procedures),
+    ], 200);
+}
+return response()->json([
+    'message' => 'These surgical_procedure  is private and can only be viewed by the doctor who added them.',
+    'data' => null,
+], 403);
+}
+
+
 }

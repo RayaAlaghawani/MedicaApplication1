@@ -18,7 +18,7 @@ return new class extends Migration
             $table->unsignedBigInteger('notifiable_id');
             $table->string('title');
             $table->string('body');
-            $table->json('data');
+         //   $table->json('data');
             $table->timestamp('read_at')->nullable();
             $table->timestamps();
         });

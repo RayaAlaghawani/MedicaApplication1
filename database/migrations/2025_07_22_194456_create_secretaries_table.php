@@ -13,15 +13,15 @@ return new class extends Migration
     {
         Schema::create('secretaries', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+            $table->string('name')->nullable();
             $table->text('fcm_token')->nullable()->default('sffry');
-            $table->string('email');
-            $table->string('phone');
-            $table->string('address');
-            $table->date('date_of_birth');
-            $table->string('image');
-            $table->string('cv');
-            $table->string('password');
+            $table->string('email')->nullable();
+            $table->string('phone')->nullable();
+            $table->string('address')->nullable();
+            $table->date('date_of_birth')->nullable();
+            $table->string('image')->nullable();
+            $table->string('cv')->nullable();
+            $table->string('password')->nullable();
             $table->foreignId('doctor_id')->nullable()->constrained('doctors');
             $table->timestamps();
         });
